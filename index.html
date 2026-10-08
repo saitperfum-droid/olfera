@@ -24,11 +24,40 @@
                 <a href="#delivery">Доставка</a>
                 <a href="#contacts">Контакти</a>
             </nav>
-            <button class="menu-toggle" aria-label="Меню">
-                <span></span><span></span><span></span>
-            </button>
+            <div class="header-actions">
+                <button class="cart-btn" id="cart-btn" aria-label="Кошик">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 01-8 0"></path>
+                    </svg>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="menu-toggle" aria-label="Меню">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
         </div>
     </header>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <aside class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Кошик</h3>
+            <button class="cart-close" id="cart-close">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- Items will be inserted here -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Разом:</span>
+                <strong id="cart-total-price">0 ₴</strong>
+            </div>
+            <button class="btn btn-gold cart-order-btn" id="cart-order-btn">Замовити в Telegram</button>
+        </div>
+    </aside>
 
     <!-- Hero -->
     <section class="hero">
@@ -47,7 +76,6 @@
             <h2 class="section-title">Каталог</h2>
             <p class="section-subtitle">Обрані аромати для нього та для неї</p>
             
-            <!-- Сюди автоматично підставляються товари з products.json -->
             <div class="products-grid" id="products-container">
                 <!-- Товари завантажуються автоматично -->
             </div>
@@ -109,7 +137,7 @@
             <div class="payment-note">
                 <p><strong>Як це працює:</strong></p>
                 <ol>
-                    <li>Обираєте аромат і оформлюєте замовлення (через сайт, Instagram або Telegram).</li>
+                    <li>Додаєте аромати в кошик і натискаєте «Замовити в Telegram».</li>
                     <li>Менеджер підтверджує наявність і узгоджує спосіб оплати та доставки.</li>
                     <li>Оплачуєте зручним способом.</li>
                     <li>Отримуєте замовлення у відділенні Нової Пошти або забираєте у Бердичеві.</li>
@@ -147,9 +175,9 @@
                     <p>Бердичів, Україна</p>
                 </div>
                 <div class="contact-card">
-                    <h3>Телефон / Telegram</h3>
-                    <p><a href="tel:+380XXXXXXXXX">+380 XX XXX XX XX</a></p>
-                    <p class="small">Напишіть у Telegram — відповімо швидко</p>
+                    <h3>Telegram</h3>
+                    <p><a href="https://t.me/rtich_you" target="_blank" rel="noopener">@rtich_you</a></p>
+                    <p class="small">Напишіть — відповімо швидко</p>
                 </div>
                 <div class="contact-card">
                     <h3>Instagram</h3>
@@ -158,7 +186,7 @@
             </div>
 
             <div class="contacts-note">
-                <p>Для замовлення або консультації з підбору аромату пишіть у Instagram або Telegram. Ми допоможемо обрати ідеальний парфум.</p>
+                <p>Для замовлення додайте товари в кошик і натисніть «Замовити в Telegram». Або напишіть нам напряму.</p>
             </div>
         </div>
     </section>
