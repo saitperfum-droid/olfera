@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Адміністратор — OLFÉRA</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Montserrat,sans-serif;background:#f7f3ec;color:#1c1a17}
+.wrap{max-width:720px;margin:0 auto;padding:24px 16px 48px}
+h1{font-weight:500;font-size:1.6rem}
+.card{background:#fff;border:1px solid rgba(154,123,47,.22);border-radius:14px;padding:16px;margin:12px 0}
+label{display:block;font-size:.78rem;color:#6f675d;margin:8px 0 4px}
+input,textarea{width:100%;box-sizing:border-box;border:1px solid #e2d7c4;border-radius:8px;padding:10px;font:inherit}
+button{border:0;border-radius:8px;padding:10px 14px;background:#9a7b2f;color:#fff;font:inherit}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.ghost{background:#fff;color:#7a6124;border:1px solid #c9a84c}
+.note{color:#6f675d;font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OLFÉRA — адміністратор</h1>
+  <p class="note">Тут можна змінити ціну, наявність і опис. Пароль: 256574</p>
+  <div id="login" class="card">
+    <label>Пароль</label>
+    <input id="pin" inputmode="numeric" type="password">
+    <button id="enter" style="margin-top:10px">Увійти</button>
+  </div>
+  <div id="panel" hidden>
+    <div id="list"></div>
+    <button id="add">Додати аромат</button>
+    <button id="download" class="ghost">Завантажити products.json</button>
+    <p class="note">Щоб зміни побачили покупці, надішли мені файл або напиши «онови каталог». Цей безкоштовний сайт сам не зберігає зміни в інтернеті.</p>
+  </div>
+</div>
+<script>
+const PIN = '256574';
+let products = [];
+const login = document.getElementById('login');
+const panel = document.getElementById('panel');
+const list = document.getElementById('list');
+document.getElementById('enter').onclick = async () => {
+  if (document.getElementById('pin').value !== PIN) return alert('Невірний пароль');
+  products = await (await fetch('products.json')).json();
+  login.hidden = true;
+  panel.hidden = false;
+  render();
+};
+function render() {
+  list.innerHTML = '';
+  products.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = '<div class="row"><strong>' + (p.name || 'Новий') + '</strong><button class="ghost toggle">' + (p.available ? 'В наявності' : 'Немає') + '</button></div>' +
+      '<label>Назва</label><input data-k="name" value="' + (p.name || '') + '">' +
+      '<label>Бренд</label><input data-k="brand" value="' + (p.brand || '') + '">' +
+      '<label>Ціна за 1 мл, ₴</label><input data-k="price" value="' + p.price + '">' +
+      '<label>Ноти</label><input data-k="notes" value="' + (p.notes || '') + '">' +
+      '<label>Опис</label><textarea data-k="description">' + (p.description || '') + '</textarea>' +
+      '<label>Посилання на фото</label><input data-k="image" value="' + (p.image || '') + '">';
+    card.querySelector('.toggle').onclick = () => { p.available = !p.available; render(); };
+    card.querySelectorAll('input,textarea').forEach(el => el.oninput = () => { p[el.dataset.k] = el.value; });
+    list.appendChild(card);
+  });
+}
+document.getElementById('add').onclick = () => {
+  products.push({ id: Date.now(), name: '', brand: '', notes: '', description: '', price: '100', unit: '1 мл', available: true, image: '' });
+  render();
+};
+document.getElementById('download').onclick = () => {
+  const blob = new Blob([JSON.stringify(products, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'products.json';
+  a.click();
+};
+</script>
+</body>
+</html>
