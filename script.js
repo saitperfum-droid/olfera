@@ -82,12 +82,10 @@ function removeFromCart(id) {
 }
 
 function updateCartUI() {
-    // Count
     const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
     cartCount.textContent = totalQty;
     cartCount.setAttribute('data-count', totalQty);
 
-    // Items
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = '<p class="cart-empty">Кошик порожній</p>';
         cartTotalPrice.textContent = '0 ₴';
@@ -102,8 +100,8 @@ function updateCartUI() {
             <div class="cart-item">
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
-                    <p>${item.notes || ''}</p>
-                    <p class="cart-item-price">${item.price} ₴ ${item.qty > 1 ? `× ${item.qty}` : ''}</p>
+                    <p>${item.brand || ''}</p>
+                    <p class="cart-item-price">${item.price} ₴ / 1 мл ${item.qty > 1 ? `× ${item.qty}` : ''}</p>
                 </div>
                 <button class="cart-item-remove" onclick="removeFromCart(${item.id})">&times;</button>
             </div>
@@ -113,7 +111,7 @@ function updateCartUI() {
     cartTotalPrice.textContent = total.toLocaleString('uk-UA') + ' ₴';
 }
 
-// Order via Telegram (improved for mobile)
+// Order via Telegram
 cartOrderBtn.addEventListener('click', () => {
     if (cart.length === 0) {
         alert('Кошик порожній');
@@ -126,7 +124,7 @@ cartOrderBtn.addEventListener('click', () => {
     cart.forEach(item => {
         const itemTotal = item.price * item.qty;
         total += itemTotal;
-        message += `• ${item.name} — ${item.price} ₴`;
+        message += `• ${item.name} (${item.brand || ''}) — ${item.price} ₴ / 1 мл`;
         if (item.qty > 1) message += ` × ${item.qty}`;
         message += '\n';
     });
@@ -134,15 +132,10 @@ cartOrderBtn.addEventListener('click', () => {
     message += `\nРазом: ${total.toLocaleString('uk-UA')} ₴`;
 
     const encoded = encodeURIComponent(message);
-
-    // Спочатку пробуємо відкрити додаток Telegram
     const appUrl = `tg://resolve?domain=${TELEGRAM_USERNAME}&text=${encoded}`;
     const webUrl = `https://t.me/${TELEGRAM_USERNAME}?text=${encoded}`;
 
-    // На мобільних краще працює через tg://
     window.location.href = appUrl;
-
-    // Якщо додаток не відкрився — через 1 секунду відкриваємо веб-версію
     setTimeout(() => {
         window.open(webUrl, '_blank');
     }, 800);
@@ -156,7 +149,6 @@ async function loadProducts() {
         const container = document.getElementById('products-container');
 
         if (!container) return;
-
         container.innerHTML = '';
 
         products.forEach(product => {
@@ -173,12 +165,14 @@ async function loadProducts() {
                     ${availableBadge}
                 </div>
                 <div class="product-info">
+                    <p class="product-brand">${product.brand || ''}</p>
                     <h3>${product.name}</h3>
                     <p class="product-notes">${product.notes}</p>
-                    <p class="product-price">${Number(product.price).toLocaleString('uk-UA')} ₴</p>
+                    <p class="product-price">${product.price} ₴ <span class="unit">/ 1 мл</span></p>
                     <button class="btn btn-outline add-to-cart-btn" 
                         data-id="${product.id}"
                         data-name="${product.name}"
+                        data-brand="${product.brand || ''}"
                         data-price="${product.price}"
                         data-notes="${product.notes}"
                         ${product.available ? '' : 'disabled'}>
@@ -190,12 +184,12 @@ async function loadProducts() {
             container.appendChild(card);
         });
 
-        // Add to cart buttons
         document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const product = {
                     id: Number(btn.dataset.id),
                     name: btn.dataset.name,
+                    brand: btn.dataset.brand,
                     price: Number(btn.dataset.price),
                     notes: btn.dataset.notes
                 };
@@ -208,7 +202,6 @@ async function loadProducts() {
     }
 }
 
-// Init
 document.addEventListener('DOMContentLoaded', () => {
     loadProducts();
     updateCartUI();
