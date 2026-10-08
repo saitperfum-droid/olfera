@@ -26,3 +26,47 @@ window.addEventListener('scroll', () => {
         header.style.background = 'rgba(10, 10, 10, 0.85)';
     }
 });
+
+// ===== Завантаження товарів з products.json =====
+async function loadProducts() {
+    try {
+        const response = await fetch('products.json');
+        const products = await response.json();
+        const container = document.getElementById('products-container');
+
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        products.forEach(product => {
+            const availableBadge = product.available 
+                ? '<span class="badge available">В наявності</span>' 
+                : '<span class="badge not-available">Немає в наявності</span>';
+
+            const card = document.createElement('article');
+            card.className = 'product-card' + (product.available ? '' : ' sold-out');
+
+            card.innerHTML = `
+                <div class="product-image">
+                    <img src="${product.image}" alt="${product.name}">
+                    ${availableBadge}
+                </div>
+                <div class="product-info">
+                    <h3>${product.name}</h3>
+                    <p class="product-notes">${product.notes}</p>
+                    <p class="product-price">${product.price} ₴</p>
+                    <button class="btn btn-outline" ${product.available ? '' : 'disabled'}>
+                        ${product.available ? 'Замовити' : 'Немає'}
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Помилка завантаження товарів:', error);
+    }
+}
+
+// Запускаємо завантаження коли сторінка готова
+document.addEventListener('DOMContentLoaded', loadProducts);
