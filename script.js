@@ -1,6 +1,10 @@
 const TELEGRAM_USERNAME = 'rtich_you';
+const ML_OPTIONS = [1, 2, 3, 5, 10];
 let cart = JSON.parse(localStorage.getItem('olfera_cart')) || [];
-let catalog = [];
+
+const style = document.createElement('style');
+style.textContent = `.ml-row{display:flex;gap:6px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap}.ml-btn{border:1px solid #c9a84c;background:#fff;color:#7a6124;border-radius:999px;padding:4px 10px;font-size:.75rem;cursor:pointer}.ml-btn.active{background:#9a7b2f;color:#fff}.line-total{font-size:.85rem;color:#7a6124;margin-top:4px}`;
+document.head.appendChild(style);
 
 const menuToggle = document.querySelector('.menu-toggle');
 const nav = document.querySelector('.nav');
@@ -26,13 +30,17 @@ cartOverlay.addEventListener('click', closeCart);
 
 function saveCart() { localStorage.setItem('olfera_cart', JSON.stringify(cart)); updateCartUI(); }
 function addToCart(product) {
-  const existing = cart.find(item => item.id === product.id);
+  const ml = Number(product.ml) || 1;
+  const existing = cart.find(item => item.id === product.id && item.ml === ml);
   if (existing) existing.qty += 1;
-  else cart.push({ ...product, qty: 1 });
+  else cart.push({ ...product, ml, qty: 1 });
   saveCart();
   openCart();
 }
-function removeFromCart(id) { cart = cart.filter(item => item.id !== id); saveCart(); }
+function removeFromCart(id, ml) {
+  cart = cart.filter(item => !(item.id === id && item.ml === ml));
+  saveCart();
+}
 function updateCartUI() {
   const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
   cartCount.textContent = totalQty;
@@ -44,25 +52,44 @@ function updateCartUI() {
   }
   let total = 0;
   cartItemsContainer.innerHTML = cart.map(item => {
-    total += item.price * item.qty;
-    return `<div class="cart-item"><div><h4>${item.name}</h4><p>${item.brand || ''}</p><p class="cart-item-price">${item.price} ₴ / 1 мл ${item.qty > 1 ? '× ' + item.qty : ''}</p></div><button class="cart-item-remove" onclick="removeFromCart(${item.id})">&times;</button></div>`;
+    const ml = item.ml || 1;
+    const line = item.price * ml * item.qty;
+    total += line;
+    return `<div class="cart-item"><div><h4>${item.name}</h4><p>${item.brand || ''}</p><p class="cart-item-price">${ml} мл × ${item.price} ₴ = ${line.toLocaleString('uk-UA')} ₴${item.qty > 1 ? ' × ' + item.qty : ''}</p></div><button class="cart-item-remove" onclick="removeFromCart(${item.id}, ${ml})">&times;</button></div>`;
   }).join('');
   cartTotalPrice.textContent = total.toLocaleString('uk-UA') + ' ₴';
 }
+window.removeFromCart = removeFromCart;
 
 cartOrderBtn.addEventListener('click', () => {
   if (!cart.length) return alert('Кошик порожній');
   let message = 'Здравствуйте! Хочу заказать:\n\n';
   let total = 0;
   cart.forEach(item => {
-    total += item.price * item.qty;
-    message += `• ${item.name} (${item.brand || ''}) — ${item.price} ₴ / 1 мл${item.qty > 1 ? ' × ' + item.qty : ''}\n`;
+    const ml = item.ml || 1;
+    const line = item.price * ml * item.qty;
+    total += line;
+    message += `• ${item.name} (${item.brand || ''}) — ${ml} мл × ${item.price} ₴ = ${line} ₴${item.qty > 1 ? ' × ' + item.qty : ''}\n`;
   });
   message += `\nРазом: ${total.toLocaleString('uk-UA')} ₴`;
   const encoded = encodeURIComponent(message);
   window.location.href = `tg://resolve?domain=${TELEGRAM_USERNAME}&text=${encoded}`;
   setTimeout(() => window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${encoded}`, '_blank'), 800);
 });
+
+function mlPicker(selected) {
+  return `<div class="ml-row">${ML_OPTIONS.map(ml => `<button type="button" class="ml-btn${ml === selected ? ' active' : ''}" data-ml="${ml}">${ml} мл</button>`).join('')}</div>`;
+}
+function bindMl(root, onChange) {
+  root.querySelectorAll('.ml-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      root.querySelectorAll('.ml-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      onChange(Number(btn.dataset.ml));
+    });
+  });
+}
 
 function ensureModal() {
   if (document.getElementById('product-modal')) return;
@@ -82,55 +109,69 @@ function openProduct(product) {
   ensureModal();
   const modal = document.getElementById('product-modal');
   const overlay = document.getElementById('modal-overlay');
-  document.getElementById('modal-body').innerHTML = `
-    <div class="modal-photo"><img src="${product.image}" alt="${product.name}"></div>
-    <div class="modal-copy">
-      <p class="product-brand">${product.brand || ''}</p>
-      <h3>${product.name}</h3>
-      <p>${product.notes || ''}</p>
-      <p>${product.description || ''}</p>
-      <p class="product-price">${product.price} ₴ <span class="unit">/ 1 мл</span></p>
-      <button class="btn btn-gold" id="modal-add" ${product.available ? '' : 'disabled'}>${product.available ? 'В кошик' : 'Немає'}</button>
-    </div>`;
+  let ml = 2;
+  const price = Number(product.price);
+  const body = document.getElementById('modal-body');
+  const render = () => {
+    body.innerHTML = `
+      <div class="modal-photo"><img src="${product.image}" alt="${product.name}"></div>
+      <div class="modal-copy">
+        <p class="product-brand">${product.brand || ''}</p>
+        <h3>${product.name}</h3>
+        <p>${product.notes || ''}</p>
+        <p>${product.description || ''}</p>
+        <p class="product-price">${price} ₴ <span class="unit">/ 1 мл</span></p>
+        ${mlPicker(ml)}
+        <p class="line-total">За ${ml} мл: ${(price * ml).toLocaleString('uk-UA')} ₴</p>
+        <button class="btn btn-gold" id="modal-add" ${product.available ? '' : 'disabled'}>${product.available ? 'В кошик' : 'Немає'}</button>
+      </div>`;
+    bindMl(body, (value) => { ml = value; render(); });
+    body.querySelector('#modal-add').addEventListener('click', () => {
+      addToCart({ id: product.id, name: product.name, brand: product.brand, price, notes: product.notes, ml });
+      modal.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+  };
+  render();
   modal.classList.add('active');
   overlay.classList.add('active');
-  document.getElementById('modal-add').addEventListener('click', () => {
-    addToCart({ id: product.id, name: product.name, brand: product.brand, price: Number(product.price), notes: product.notes });
-    modal.classList.remove('active');
-    overlay.classList.remove('active');
-  });
 }
 
 async function loadProducts() {
   const products = await (await fetch('products.json')).json();
-  catalog = products;
   const container = document.getElementById('products-container');
   container.innerHTML = '';
   products.forEach(product => {
+    const price = Number(product.price);
+    let ml = 2;
     const card = document.createElement('article');
     card.className = 'product-card' + (product.available ? '' : ' sold-out');
-    card.innerHTML = `
-      <div class="product-image">
-        <img src="${product.image}" alt="${product.name}">
-        <span class="badge ${product.available ? 'available' : 'not-available'}">${product.available ? 'В наявності' : 'Немає'}</span>
-      </div>
-      <div class="product-info">
-        <p class="product-brand">${product.brand || ''}</p>
-        <h3>${product.name}</h3>
-        <p class="product-notes">${product.notes}</p>
-        <p class="product-price">${product.price} ₴ <span class="unit">/ 1 мл</span></p>
-        <span class="tap-hint">Натисніть, щоб прочитати опис</span>
-        <button class="btn btn-outline add-to-cart-btn" ${product.available ? '' : 'disabled'}>${product.available ? 'В кошик' : 'Немає'}</button>
-      </div>`;
-    card.addEventListener('click', (e) => {
-      if (e.target.closest('.add-to-cart-btn')) return;
-      openProduct(product);
-    });
-    card.querySelector('.add-to-cart-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (!product.available) return;
-      addToCart({ id: product.id, name: product.name, brand: product.brand, price: Number(product.price), notes: product.notes });
-    });
+    const paint = () => {
+      card.innerHTML = `
+        <div class="product-image">
+          <img src="${product.image}" alt="${product.name}">
+          <span class="badge ${product.available ? 'available' : 'not-available'}">${product.available ? 'В наявності' : 'Немає'}</span>
+        </div>
+        <div class="product-info">
+          <p class="product-brand">${product.brand || ''}</p>
+          <h3>${product.name}</h3>
+          <p class="product-notes">${product.notes}</p>
+          <p class="product-price">${price} ₴ <span class="unit">/ 1 мл</span></p>
+          ${mlPicker(ml)}
+          <p class="line-total">За ${ml} мл: ${(price * ml).toLocaleString('uk-UA')} ₴</p>
+          <span class="tap-hint">Натисніть, щоб прочитати опис</span>
+          <button class="btn btn-outline add-to-cart-btn" ${product.available ? '' : 'disabled'}>${product.available ? 'В кошик' : 'Немає'}</button>
+        </div>`;
+      bindMl(card, (value) => { ml = value; paint(); });
+      card.querySelector('.product-image').addEventListener('click', () => openProduct(product));
+      card.querySelector('h3').addEventListener('click', () => openProduct(product));
+      card.querySelector('.add-to-cart-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!product.available) return;
+        addToCart({ id: product.id, name: product.name, brand: product.brand, price, notes: product.notes, ml });
+      });
+    };
+    paint();
     container.appendChild(card);
   });
 }
