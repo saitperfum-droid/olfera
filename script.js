@@ -113,7 +113,7 @@ function updateCartUI() {
     cartTotalPrice.textContent = total.toLocaleString('uk-UA') + ' ₴';
 }
 
-// Order via Telegram
+// Order via Telegram (improved for mobile)
 cartOrderBtn.addEventListener('click', () => {
     if (cart.length === 0) {
         alert('Кошик порожній');
@@ -134,8 +134,18 @@ cartOrderBtn.addEventListener('click', () => {
     message += `\nРазом: ${total.toLocaleString('uk-UA')} ₴`;
 
     const encoded = encodeURIComponent(message);
-    const url = `https://t.me/${TELEGRAM_USERNAME}?text=${encoded}`;
-    window.open(url, '_blank');
+
+    // Спочатку пробуємо відкрити додаток Telegram
+    const appUrl = `tg://resolve?domain=${TELEGRAM_USERNAME}&text=${encoded}`;
+    const webUrl = `https://t.me/${TELEGRAM_USERNAME}?text=${encoded}`;
+
+    // На мобільних краще працює через tg://
+    window.location.href = appUrl;
+
+    // Якщо додаток не відкрився — через 1 секунду відкриваємо веб-версію
+    setTimeout(() => {
+        window.open(webUrl, '_blank');
+    }, 800);
 });
 
 // ===== Load products =====
