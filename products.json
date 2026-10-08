@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "name": "Velvet Rose",
+    "notes": "Троянда • Ваніль • Мускус",
+    "price": "2450",
+    "available": true,
+    "image": "images/hero.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Golden Amber",
+    "notes": "Амбра • Бергамот • Кедр",
+    "price": "2890",
+    "available": true,
+    "image": "images/hero.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Noir Mystique",
+    "notes": "Чорний перець • Шкіра • Уд",
+    "price": "3150",
+    "available": true,
+    "image": "images/hero.jpg"
+  },
+  {
+    "id": 4,
+    "name": "White Bloom",
+    "notes": "Жасмин • Піон • Сандал",
+    "price": "2670",
+    "available": false,
+    "image": "images/hero.jpg"
+  }
+]
