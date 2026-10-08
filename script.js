@@ -63,7 +63,7 @@ window.removeFromCart = removeFromCart;
 
 cartOrderBtn.addEventListener('click', () => {
   if (!cart.length) return alert('Кошик порожній');
-  let message = 'Здравствуйте! Хочу заказать:\n\n';
+  let message = 'Вітаю! Хочу замовити:\n\n';
   let total = 0;
   cart.forEach(item => {
     const ml = item.ml || 1;
