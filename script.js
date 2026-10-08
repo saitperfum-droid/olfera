@@ -81,23 +81,26 @@ function mlPicker(selected, custom) {
   const preset = ML_OPTIONS.includes(selected) && !custom;
   const buttons = ML_OPTIONS.map(ml => `<button type="button" class="ml-btn${preset && ml === selected ? ' active' : ''}" data-ml="${ml}">${ml} мл</button>`).join('');
   const other = `<button type="button" class="ml-btn${!preset ? ' active' : ''}" data-ml="other">Інше</button>`;
-  const input = !preset ? `<input class="ml-custom" type="number" min="1" max="100" step="1" value="${selected}" inputmode="numeric" aria-label="Свій об’єм у мл">` : '';
+  const input = !preset ? `<input class="ml-custom" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" value="${selected}" aria-label="Свій об’єм у мл">` : '';
   return `<div class="ml-row">${buttons}${other}${input}</div>`;
 }
 function bindMl(root, getState, setState) {
   root.querySelectorAll('.ml-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (btn.dataset.ml === 'other') setState({ ml: getState().ml || 8, custom: true });
-      else setState({ ml: Number(btn.dataset.ml), custom: false });
+      if (btn.dataset.ml === 'other') setState({ ml: getState().ml || 8, custom: true }, true);
+      else setState({ ml: Number(btn.dataset.ml), custom: false }, true);
     });
   });
   const input = root.querySelector('.ml-custom');
   if (input) {
     input.addEventListener('click', (e) => e.stopPropagation());
+    input.addEventListener('keydown', (e) => e.stopPropagation());
     input.addEventListener('input', (e) => {
       e.stopPropagation();
-      const value = Math.max(1, Math.min(100, Number(input.value) || 1));
+      const digits = input.value.replace(/\D/g, '').slice(0, 3);
+      if (digits !== input.value) input.value = digits;
+      const value = Math.max(1, Math.min(100, Number(digits) || 1));
       setState({ ml: value, custom: true }, false);
       const total = root.querySelector('.line-total');
       if (total) total.textContent = `За ${value} мл: ${(getState().price * value).toLocaleString('uk-UA')} ₴`;
@@ -139,7 +142,11 @@ function openProduct(product) {
         <p class="line-total">За ${state.ml} мл: ${(price * state.ml).toLocaleString('uk-UA')} ₴</p>
         <button class="btn btn-gold" id="modal-add" ${product.available ? '' : 'disabled'}>${product.available ? 'В кошик' : 'Немає'}</button>
       </div>`;
-    bindMl(body, () => state, (next) => { state.ml = next.ml; state.custom = next.custom; render(); });
+    bindMl(body, () => state, (next, rerender) => {
+      state.ml = next.ml;
+      state.custom = next.custom;
+      if (rerender) render();
+    });
     body.querySelector('#modal-add').addEventListener('click', () => {
       addToCart({ id: product.id, name: product.name, brand: product.brand, price, notes: product.notes, ml: state.ml });
       modal.classList.remove('active');
@@ -176,7 +183,11 @@ async function loadProducts() {
           <span class="tap-hint">Натисніть, щоб прочитати опис</span>
           <button class="btn btn-outline add-to-cart-btn" ${product.available ? '' : 'disabled'}>${product.available ? 'В кошик' : 'Немає'}</button>
         </div>`;
-      bindMl(card, () => state, (next) => { state.ml = next.ml; state.custom = next.custom; paint(); });
+      bindMl(card, () => state, (next, rerender) => {
+        state.ml = next.ml;
+        state.custom = next.custom;
+        if (rerender) paint();
+      });
       card.querySelector('.product-image').addEventListener('click', () => openProduct(product));
       card.querySelector('h3').addEventListener('click', () => openProduct(product));
       card.querySelector('.add-to-cart-btn').addEventListener('click', (e) => {
