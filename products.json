@@ -8,7 +8,7 @@
     "price": "150",
     "unit": "1 мл",
     "available": true,
-    "image": "IMG_0530.jpeg"
+    "image": "https://saitperfum-droid.github.io/olfera/IMG_0530.jpeg"
   },
   {
     "id": 2,
@@ -19,7 +19,7 @@
     "price": "150",
     "unit": "1 мл",
     "available": true,
-    "image": "IMG_0531.jpeg"
+    "image": "https://saitperfum-droid.github.io/olfera/IMG_0531.jpeg"
   },
   {
     "id": 3,
@@ -30,7 +30,7 @@
     "price": "140",
     "unit": "1 мл",
     "available": true,
-    "image": "IMG_0532.jpeg"
+    "image": "https://saitperfum-droid.github.io/olfera/IMG_0532.jpeg"
   },
   {
     "id": 4,
@@ -41,7 +41,7 @@
     "price": "160",
     "unit": "1 мл",
     "available": true,
-    "image": "IMG_0533.jpeg"
+    "image": "https://saitperfum-droid.github.io/olfera/IMG_0533.jpeg"
   },
   {
     "id": 5,
@@ -52,6 +52,6 @@
     "price": "70",
     "unit": "1 мл",
     "available": true,
-    "image": "IMG_0534.jpeg"
+    "image": "https://saitperfum-droid.github.io/olfera/IMG_0534.jpeg"
   }
 ]
