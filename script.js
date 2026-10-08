@@ -3,7 +3,7 @@ const ML_OPTIONS = [1, 2, 3, 5, 10];
 let cart = JSON.parse(localStorage.getItem('olfera_cart')) || [];
 
 const style = document.createElement('style');
-style.textContent = `.ml-row{display:flex;gap:6px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap}.ml-btn{border:1px solid #c9a84c;background:#fff;color:#7a6124;border-radius:999px;padding:4px 10px;font-size:.75rem;cursor:pointer}.ml-btn.active{background:#9a7b2f;color:#fff}.line-total{font-size:.85rem;color:#7a6124;margin-top:4px}`;
+style.textContent = `.ml-row{display:flex;gap:6px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap}.ml-btn{border:1px solid #c9a84c;background:#fff;color:#7a6124;border-radius:999px;padding:4px 10px;font-size:.75rem;cursor:pointer}.ml-btn.active{background:#9a7b2f;color:#fff}.ml-custom{width:88px;border:1px solid #c9a84c;border-radius:999px;padding:4px 8px;text-align:center;font-size:.8rem}.line-total{font-size:.85rem;color:#7a6124;margin-top:4px}`;
 document.head.appendChild(style);
 
 const menuToggle = document.querySelector('.menu-toggle');
@@ -77,18 +77,32 @@ cartOrderBtn.addEventListener('click', () => {
   setTimeout(() => window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${encoded}`, '_blank'), 800);
 });
 
-function mlPicker(selected) {
-  return `<div class="ml-row">${ML_OPTIONS.map(ml => `<button type="button" class="ml-btn${ml === selected ? ' active' : ''}" data-ml="${ml}">${ml} мл</button>`).join('')}</div>`;
+function mlPicker(selected, custom) {
+  const preset = ML_OPTIONS.includes(selected) && !custom;
+  const buttons = ML_OPTIONS.map(ml => `<button type="button" class="ml-btn${preset && ml === selected ? ' active' : ''}" data-ml="${ml}">${ml} мл</button>`).join('');
+  const other = `<button type="button" class="ml-btn${!preset ? ' active' : ''}" data-ml="other">Інше</button>`;
+  const input = !preset ? `<input class="ml-custom" type="number" min="1" max="100" step="1" value="${selected}" inputmode="numeric" aria-label="Свій об’єм у мл">` : '';
+  return `<div class="ml-row">${buttons}${other}${input}</div>`;
 }
-function bindMl(root, onChange) {
+function bindMl(root, getState, setState) {
   root.querySelectorAll('.ml-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      root.querySelectorAll('.ml-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      onChange(Number(btn.dataset.ml));
+      if (btn.dataset.ml === 'other') setState({ ml: getState().ml || 8, custom: true });
+      else setState({ ml: Number(btn.dataset.ml), custom: false });
     });
   });
+  const input = root.querySelector('.ml-custom');
+  if (input) {
+    input.addEventListener('click', (e) => e.stopPropagation());
+    input.addEventListener('input', (e) => {
+      e.stopPropagation();
+      const value = Math.max(1, Math.min(100, Number(input.value) || 1));
+      setState({ ml: value, custom: true }, false);
+      const total = root.querySelector('.line-total');
+      if (total) total.textContent = `За ${value} мл: ${(getState().price * value).toLocaleString('uk-UA')} ₴`;
+    });
+  }
 }
 
 function ensureModal() {
@@ -109,8 +123,8 @@ function openProduct(product) {
   ensureModal();
   const modal = document.getElementById('product-modal');
   const overlay = document.getElementById('modal-overlay');
-  let ml = 2;
   const price = Number(product.price);
+  const state = { ml: 2, custom: false, price };
   const body = document.getElementById('modal-body');
   const render = () => {
     body.innerHTML = `
@@ -121,13 +135,13 @@ function openProduct(product) {
         <p>${product.notes || ''}</p>
         <p>${product.description || ''}</p>
         <p class="product-price">${price} ₴ <span class="unit">/ 1 мл</span></p>
-        ${mlPicker(ml)}
-        <p class="line-total">За ${ml} мл: ${(price * ml).toLocaleString('uk-UA')} ₴</p>
+        ${mlPicker(state.ml, state.custom)}
+        <p class="line-total">За ${state.ml} мл: ${(price * state.ml).toLocaleString('uk-UA')} ₴</p>
         <button class="btn btn-gold" id="modal-add" ${product.available ? '' : 'disabled'}>${product.available ? 'В кошик' : 'Немає'}</button>
       </div>`;
-    bindMl(body, (value) => { ml = value; render(); });
+    bindMl(body, () => state, (next) => { state.ml = next.ml; state.custom = next.custom; render(); });
     body.querySelector('#modal-add').addEventListener('click', () => {
-      addToCart({ id: product.id, name: product.name, brand: product.brand, price, notes: product.notes, ml });
+      addToCart({ id: product.id, name: product.name, brand: product.brand, price, notes: product.notes, ml: state.ml });
       modal.classList.remove('active');
       overlay.classList.remove('active');
     });
@@ -143,7 +157,7 @@ async function loadProducts() {
   container.innerHTML = '';
   products.forEach(product => {
     const price = Number(product.price);
-    let ml = 2;
+    const state = { ml: 2, custom: false, price };
     const card = document.createElement('article');
     card.className = 'product-card' + (product.available ? '' : ' sold-out');
     const paint = () => {
@@ -157,18 +171,18 @@ async function loadProducts() {
           <h3>${product.name}</h3>
           <p class="product-notes">${product.notes}</p>
           <p class="product-price">${price} ₴ <span class="unit">/ 1 мл</span></p>
-          ${mlPicker(ml)}
-          <p class="line-total">За ${ml} мл: ${(price * ml).toLocaleString('uk-UA')} ₴</p>
+          ${mlPicker(state.ml, state.custom)}
+          <p class="line-total">За ${state.ml} мл: ${(price * state.ml).toLocaleString('uk-UA')} ₴</p>
           <span class="tap-hint">Натисніть, щоб прочитати опис</span>
           <button class="btn btn-outline add-to-cart-btn" ${product.available ? '' : 'disabled'}>${product.available ? 'В кошик' : 'Немає'}</button>
         </div>`;
-      bindMl(card, (value) => { ml = value; paint(); });
+      bindMl(card, () => state, (next) => { state.ml = next.ml; state.custom = next.custom; paint(); });
       card.querySelector('.product-image').addEventListener('click', () => openProduct(product));
       card.querySelector('h3').addEventListener('click', () => openProduct(product));
       card.querySelector('.add-to-cart-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         if (!product.available) return;
-        addToCart({ id: product.id, name: product.name, brand: product.brand, price, notes: product.notes, ml });
+        addToCart({ id: product.id, name: product.name, brand: product.brand, price, notes: product.notes, ml: state.ml });
       });
     };
     paint();
