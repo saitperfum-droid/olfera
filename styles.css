@@ -429,7 +429,7 @@ h1, h2, h3 {
     transform: scale(1.05);
 }
 
-/* Badges for availability */
+/* Badges */
 .badge {
     position: absolute;
     top: 12px;
@@ -458,8 +458,16 @@ h1, h2, h3 {
     text-align: center;
 }
 
+.product-brand {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+}
+
 .product-info h3 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     color: var(--gold-light);
     margin-bottom: 8px;
 }
@@ -474,6 +482,12 @@ h1, h2, h3 {
     font-size: 1.25rem;
     font-weight: 500;
     color: var(--gold);
+}
+
+.product-price .unit {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 400;
 }
 
 /* About */
