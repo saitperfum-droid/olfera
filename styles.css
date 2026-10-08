@@ -109,6 +109,11 @@ h1, h2, h3 {
     color: var(--black);
 }
 
+.btn-outline:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Header */
 .header {
     position: fixed;
@@ -229,6 +234,7 @@ h1, h2, h3 {
     border: 1px solid rgba(201, 168, 76, 0.12);
     overflow: hidden;
     transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
 }
 
 .product-card:hover {
@@ -236,9 +242,14 @@ h1, h2, h3 {
     box-shadow: 0 16px 40px rgba(0,0,0,0.4);
 }
 
+.product-card.sold-out {
+    opacity: 0.7;
+}
+
 .product-image {
     aspect-ratio: 1;
     overflow: hidden;
+    position: relative;
 }
 
 .product-image img {
@@ -250,6 +261,30 @@ h1, h2, h3 {
 
 .product-card:hover .product-image img {
     transform: scale(1.05);
+}
+
+/* Badges for availability */
+.badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.badge.available {
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+}
+
+.badge.not-available {
+    background: rgba(180, 40, 40, 0.9);
+    color: white;
 }
 
 .product-info {
