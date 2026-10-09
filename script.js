@@ -116,13 +116,6 @@ cartOrderBtn.addEventListener('click', () => {
   const encoded = encodeURIComponent(message);
   window.location.href = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encoded;
 });
-  const hint = document.getElementById('order-hint');
-  if (hint) hint.textContent = 'Текст скопійовано. У Telegram вставте його і натисніть відправити.';
-  window.location.href = 'tg://resolve?domain=' + TELEGRAM_USERNAME;
-  setTimeout(() => {
-    if (!document.hidden) window.location.href = 'https://t.me/' + TELEGRAM_USERNAME;
-  }, 900);
-});
 
 function mlPicker(selected, custom) {
   const preset = ML_OPTIONS.indexOf(selected) !== -1 && !custom;
