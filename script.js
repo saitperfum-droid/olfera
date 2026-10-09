@@ -142,7 +142,7 @@ function openProduct(product) {
 }
 
 async function loadProducts() {
-  const products = await (await fetch('products.json?v=9')).json();
+  const products = await (await fetch('products.json?v=10')).json();
   const container = document.getElementById('products-container');
   container.innerHTML = '';
   products.forEach(product => {
