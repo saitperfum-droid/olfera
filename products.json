@@ -218,5 +218,115 @@
     "unit": "1 мл",
     "available": true,
     "image": "https://saitperfum-droid.github.io/olfera/chimilka.jpg"
+  },
+  {
+    "id": 21,
+    "name": "Libre",
+    "brand": "Yves Saint Laurent",
+    "notes": "Квітковий · Лаванда · Ваніль",
+    "description": "Квітковий аромат із характером. На старті лаванда, петитгрейн, танжерин і чорна смородина. У серці апельсиновий цвіт, жасмин самбак і лаванда. База: амбра, білий мускус, ваніль і кедр.",
+    "price": "80",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/ysl-libre.jpg"
+  },
+  {
+    "id": 22,
+    "name": "This is Her",
+    "brand": "Zadig & Voltaire",
+    "notes": "Жасмин · Каштан · Сандал",
+    "description": "Гурманський, деревний і квітковий. Жасмин на старті, ваніль і кремовий каштан у серці, чуттєвий сандал у базі. М’який, теплий і дуже тілесний.",
+    "price": "70",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/this-is-her.jpg"
+  },
+  {
+    "id": 23,
+    "name": "Annabella",
+    "brand": "Attar Collection",
+    "notes": "Османтус · Молоко · Гарденія",
+    "description": "Квітково-східний limited edition. Османтус, фрезія і чай улун на старті, квітка апельсина, молоко й сандал у серці. База: білий мускус, ваніль і гарденія.",
+    "price": "70",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/annabella.jpg"
+  },
+  {
+    "id": 24,
+    "name": "Devotion",
+    "brand": "Dolce & Gabbana",
+    "notes": "Лимон · Флердоранж · Ваніль",
+    "description": "Солодкий лимонний десерт. Зацукрований лимон на старті, флердоранж у серці і тепла ваніль у базі. Світлий, компліментарний і дуже носибельний.",
+    "price": "80",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/dg-devotion.jpg"
+  },
+  {
+    "id": 25,
+    "name": "Andromeda",
+    "brand": "Tiziana Terenzi",
+    "notes": "Іланг-іланг · Троянда · Ваніль",
+    "description": "Квітково-східний екстракт. Іланг-іланг, бергамот, водяний жасмин і трава на старті. Дамаська троянда, квітка груші, фіалка, лілія і персик у серці. База: амбра, боби тонка, ваніль, ебен, кашемір, кокос і цукор.",
+    "price": "100",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/andromeda.jpg"
+  },
+  {
+    "id": 26,
+    "name": "HFC Paris",
+    "brand": "Haute Fragrance Company",
+    "notes": "Вишня · Уд · Шкіра",
+    "description": "Гурманський східний аромат. Вишня, олібанум, османтус і слива на старті. Корінь іриса, троянда, фініки й шкіра в серці. База: бензоїн, ладан, мускус, толуанський бальзам і уд.",
+    "price": "180",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/hfc-paris.jpg"
+  },
+  {
+    "id": 27,
+    "name": "La Vie Est Belle",
+    "brand": "Lancôme",
+    "notes": "Ваніль · Жасмин · Мускус",
+    "description": "Ванільний, мускусний, пудровий і солодкий. Ваніль на старті, жасмин у серці, мускус і сонячні ноти в базі. Класика, яку впізнають з першого вдиху.",
+    "price": "80",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/la-vie-est-belle.jpg"
+  },
+  {
+    "id": 28,
+    "name": "Paradoxe",
+    "brand": "Prada",
+    "notes": "Неролі · Апельсин · Фісташка",
+    "description": "Деревний і сучасний. Олія неролі на старті, абсолют квітів апельсина в серці, фісташка в базі. Свіжий, але з м’якою солодкістю.",
+    "price": "80",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/prada-paradoxe.jpg"
+  },
+  {
+    "id": 29,
+    "name": "Escentric 02",
+    "brand": "Escentric Molecules",
+    "notes": "Ірис · Жасмин · Амброксан",
+    "description": "Прозорий молекулярний аромат. Ірис і жасмин на старті, Iso E Super у серці, амброксан у базі. Чистий, шкірний і майже невидимий, поки не підійдеш ближче.",
+    "price": "80",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/escentric-02.jpg"
+  },
+  {
+    "id": 30,
+    "name": "Pink Molécule 090·09",
+    "brand": "Zarkoperfume",
+    "notes": "Абрикос · Шампанське · Вершки",
+    "description": "Квітковий, солодкий і фруктовий. Абрикос, рожеве шампанське, чорна бузина і чорна орхідея на старті. Рожеве шампанське в серці. База: вершки, махагоні і чорне дерево.",
+    "price": "80",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/pink-molecule.jpg"
   }
 ]
