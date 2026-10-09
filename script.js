@@ -61,8 +61,43 @@ function updateCartUI() {
 }
 window.removeFromCart = removeFromCart;
 
+const orderName = document.getElementById('order-name');
+const orderPhone = document.getElementById('order-phone');
+const orderDelivery = document.getElementById('order-delivery');
+const orderNp = document.getElementById('order-np');
+const savedOrder = JSON.parse(localStorage.getItem('olfera_order') || '{}');
+if (orderName) orderName.value = savedOrder.name || '';
+if (orderPhone) orderPhone.value = savedOrder.phone || '';
+if (orderDelivery && savedOrder.delivery) orderDelivery.value = savedOrder.delivery;
+if (orderNp) orderNp.value = savedOrder.np || '';
+function syncNp() {
+  if (!orderNp || !orderDelivery) return;
+  const np = orderDelivery.value === 'Нова Пошта';
+  orderNp.hidden = !np;
+}
+syncNp();
+if (orderDelivery) orderDelivery.addEventListener('change', syncNp);
+function saveOrder() {
+  localStorage.setItem('olfera_order', JSON.stringify({
+    name: orderName ? orderName.value.trim() : '',
+    phone: orderPhone ? orderPhone.value.trim() : '',
+    delivery: orderDelivery ? orderDelivery.value : '',
+    np: orderNp ? orderNp.value.trim() : ''
+  }));
+}
+[orderName, orderPhone, orderNp].forEach(el => el && el.addEventListener('input', saveOrder));
+if (orderDelivery) orderDelivery.addEventListener('change', saveOrder);
+
 cartOrderBtn.addEventListener('click', () => {
   if (!cart.length) return alert('Кошик порожній');
+  const name = (orderName && orderName.value.trim()) || '';
+  const phone = (orderPhone && orderPhone.value.trim()) || '';
+  const delivery = (orderDelivery && orderDelivery.value) || 'Самовивіз, Європейська 6/5';
+  const np = (orderNp && orderNp.value.trim()) || '';
+  if (!name) return alert('Напишіть ім’я');
+  if (phone.replace(/\D/g, '').length < 10) return alert('Напишіть телефон');
+  if (delivery === 'Нова Пошта' && np.length < 3) return alert('Напишіть місто і відділення Нової Пошти');
+  saveOrder();
   let message = 'Вітаю! Хочу замовити:\n\n';
   let total = 0;
   cart.forEach(item => {
@@ -72,6 +107,10 @@ cartOrderBtn.addEventListener('click', () => {
     message += '• ' + item.name + ' (' + (item.brand || '') + ') — ' + ml + ' мл × ' + item.price + ' ₴ = ' + line + ' ₴\n';
   });
   message += '\nРазом: ' + total.toLocaleString('uk-UA') + ' ₴';
+  message += '\n\nІм’я: ' + name;
+  message += '\nТелефон: ' + phone;
+  message += '\nОтримання: ' + delivery;
+  if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
   const encoded = encodeURIComponent(message);
   window.location.href = 'tg://resolve?domain=' + TELEGRAM_USERNAME + '&text=' + encoded;
   setTimeout(() => window.open('https://t.me/' + TELEGRAM_USERNAME + '?text=' + encoded, '_blank'), 800);
@@ -141,27 +180,107 @@ function openProduct(product) {
   overlay.classList.add('active');
 }
 
-async function loadProducts() {
-  const products = await (await fetch('products.json?v=14')).json();
+const FAMILIES = [
+  { id: 'fresh', label: 'Свіжі' },
+  { id: 'sweet', label: 'Солодкі' },
+  { id: 'oud', label: 'Уд' },
+  { id: 'floral', label: 'Квіткові' },
+  { id: 'woody', label: 'Деревні' },
+  { id: 'unisex', label: 'Унісекс' }
+];
+function familiesOf(product) {
+  const text = ((product.notes || '') + ' ' + (product.description || '') + ' ' + (product.name || '')).toLowerCase();
+  const tags = [];
+  if (/бергамот|цитрус|лимон|грейпфрут|помело|неролі|свіж|мандарин|петит|апельсин/.test(text)) tags.push('fresh');
+  if (/ваніл|цукор|мед|солод|каштан|шампан|кокос|фінік|абрикос|вершк/.test(text)) tags.push('sweet');
+  if (/уд|oud|смол|афган|ладан|бензоїн/.test(text)) tags.push('oud');
+  if (/жасмин|троянд|квіт|фіалк|османтус|магнол|півон|гарден/.test(text)) tags.push('floral');
+  if (/сандал|кедр|дерев|ірис|мускус|замш/.test(text)) tags.push('woody');
+  if (/унісекс/.test(text)) tags.push('unisex');
+  return tags;
+}
+let allProducts = [];
+let activeFamily = '';
+
+function paintCard(product) {
+  const price = Number(product.price);
+  const state = { ml: 2, custom: false, price: price };
+  const card = document.createElement('article');
+  card.className = 'product-card';
+  const paint = () => {
+    card.innerHTML = '<div class="product-image"><img src="' + product.image + '" alt="' + product.name + '"><span class="badge available">В наявності</span></div><div class="product-info"><p class="product-brand">' + (product.brand || '') + '</p><h3>' + product.name + '</h3><p class="product-notes">' + product.notes + '</p><p class="product-notes">' + (product.description || '') + '</p><p class="product-price">' + price + ' ₴ <span class="unit">/ 1 мл</span></p>' + mlPicker(state.ml, state.custom) + '<p class="line-total">За ' + state.ml + ' мл: ' + (price * state.ml).toLocaleString('uk-UA') + ' ₴</p><span class="tap-hint">Натисніть, щоб прочитати опис</span><button class="btn btn-outline add-to-cart-btn">В кошик</button></div>';
+    bindMl(card, () => state, (next, rerender) => { state.ml = next.ml; state.custom = next.custom; if (rerender) paint(); });
+    card.querySelector('.product-image').addEventListener('click', () => openProduct(product));
+    card.querySelector('h3').addEventListener('click', () => openProduct(product));
+    card.querySelector('.add-to-cart-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      addToCart({ id: product.id, name: product.name, brand: product.brand, price: price, notes: product.notes, ml: state.ml });
+    });
+  };
+  paint();
+  return card;
+}
+function renderProducts() {
   const container = document.getElementById('products-container');
+  const query = (document.getElementById('search-input').value || '').trim().toLowerCase();
+  const brand = document.getElementById('brand-filter').value;
+  const price = document.getElementById('price-filter').value;
+  const filtered = allProducts.filter(product => {
+    const hay = (product.name + ' ' + (product.brand || '') + ' ' + (product.notes || '')).toLowerCase();
+    if (query && !hay.includes(query)) return false;
+    if (brand && product.brand !== brand) return false;
+    if (activeFamily && familiesOf(product).indexOf(activeFamily) === -1) return false;
+    if (price) {
+      const parts = price.split('-').map(Number);
+      const value = Number(product.price);
+      if (value < parts[0] || value > parts[1]) return false;
+    }
+    return true;
+  });
   container.innerHTML = '';
-  products.forEach(product => {
-    const price = Number(product.price);
-    const state = { ml: 2, custom: false, price: price };
-    const card = document.createElement('article');
-    card.className = 'product-card';
-    const paint = () => {
-      card.innerHTML = '<div class="product-image"><img src="' + product.image + '" alt="' + product.name + '"><span class="badge available">В наявності</span></div><div class="product-info"><p class="product-brand">' + (product.brand || '') + '</p><h3>' + product.name + '</h3><p class="product-notes">' + product.notes + '</p><p class="product-notes">' + (product.description || "") + '</p><p class="product-price">' + price + ' ₴ <span class="unit">/ 1 мл</span></p>' + mlPicker(state.ml, state.custom) + '<p class="line-total">За ' + state.ml + ' мл: ' + (price * state.ml).toLocaleString('uk-UA') + ' ₴</p><span class="tap-hint">Натисніть, щоб прочитати опис</span><button class="btn btn-outline add-to-cart-btn">В кошик</button></div>';
-      bindMl(card, () => state, (next, rerender) => { state.ml = next.ml; state.custom = next.custom; if (rerender) paint(); });
-      card.querySelector('.product-image').addEventListener('click', () => openProduct(product));
-      card.querySelector('h3').addEventListener('click', () => openProduct(product));
-      card.querySelector('.add-to-cart-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        addToCart({ id: product.id, name: product.name, brand: product.brand, price: price, notes: product.notes, ml: state.ml });
-      });
-    };
-    paint();
-    container.appendChild(card);
+  const count = document.getElementById('filter-count');
+  count.textContent = filtered.length ? ('Знайдено: ' + filtered.length) : '';
+  if (!filtered.length) {
+    container.innerHTML = '<p class="catalog-empty">Нічого не знайдено. Спробуйте іншу назву або скиньте фільтр.</p>';
+    return;
+  }
+  filtered.forEach(product => container.appendChild(paintCard(product)));
+}
+function setupFilters() {
+  const familyRow = document.getElementById('family-filters');
+  familyRow.innerHTML = FAMILIES.map(item => '<button type="button" class="filter-chip" data-family="' + item.id + '">' + item.label + '</button>').join('');
+  familyRow.querySelectorAll('.filter-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFamily = activeFamily === btn.dataset.family ? '' : btn.dataset.family;
+      familyRow.querySelectorAll('.filter-chip').forEach(chip => chip.classList.toggle('active', chip.dataset.family === activeFamily));
+      renderProducts();
+    });
+  });
+  const brandSelect = document.getElementById('brand-filter');
+  const brands = Array.from(new Set(allProducts.map(p => p.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'uk'));
+  brands.forEach(name => {
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = name;
+    brandSelect.appendChild(option);
+  });
+  document.getElementById('search-input').addEventListener('input', renderProducts);
+  brandSelect.addEventListener('change', renderProducts);
+  document.getElementById('price-filter').addEventListener('change', renderProducts);
+  document.getElementById('filter-reset').addEventListener('click', () => {
+    document.getElementById('search-input').value = '';
+    brandSelect.value = '';
+    document.getElementById('price-filter').value = '';
+    activeFamily = '';
+    familyRow.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+    renderProducts();
   });
 }
-document.addEventListener('DOMContentLoaded', () => { loadProducts(); updateCartUI(); });
+async function loadProducts() {
+  allProducts = await (await fetch('products.json?v=15')).json();
+  setupFilters();
+  renderProducts();
+}
+
+updateCartUI();
+loadProducts();
