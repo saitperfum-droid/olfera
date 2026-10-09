@@ -95,7 +95,9 @@ cartOrderBtn.addEventListener('click', () => {
   const delivery = (orderDelivery && orderDelivery.value) || 'Самовивіз, Європейська 6/5';
   const np = (orderNp && orderNp.value.trim()) || '';
   if (!name) return alert('Напишіть ім’я');
-  if (phone.replace(/\D/g, '').length < 10) return alert('Напишіть телефон');
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length < 9) return alert('Напишіть телефон');
+  const pretty = digits.length === 9 ? '+380' + digits : (digits.startsWith('380') ? '+' + digits : (digits.startsWith('0') ? '+38' + digits : phone));
   if (delivery === 'Нова Пошта' && np.length < 3) return alert('Напишіть місто і відділення Нової Пошти');
   saveOrder();
   let message = 'Вітаю! Хочу замовити:\n\n';
@@ -108,7 +110,7 @@ cartOrderBtn.addEventListener('click', () => {
   });
   message += '\nРазом: ' + total.toLocaleString('uk-UA') + ' ₴';
   message += '\n\nІм’я: ' + name;
-  message += '\nТелефон: ' + phone;
+  message += '\nТелефон: ' + pretty;
   message += '\nОтримання: ' + delivery;
   if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
   const encoded = encodeURIComponent(message);
