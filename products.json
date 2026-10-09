@@ -185,5 +185,27 @@
     "unit": "1 мл",
     "available": true,
     "image": "https://saitperfum-droid.github.io/olfera/majestic-amber.jpg"
+  },
+  {
+    "id": 18,
+    "name": "Ginger",
+    "brand": "Widian",
+    "notes": "Імбир · Бергамот · Жасмин",
+    "description": "Світлий імбирний аромат: бергамот і лимон на старті, жасмин, магнолія та фіалка в серці, амбра, пачулі й сандал у базі. Свіжий, але теплий, ніби імбирний чай у дорогому склі.",
+    "price": "150",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/widian-ginger.jpg"
+  },
+  {
+    "id": 19,
+    "name": "Alexandre J",
+    "brand": "Alexandre J",
+    "notes": "Фінік · Шафран · Ваніль",
+    "description": "Густий східний аромат: безсмертник, боби тонка, ваніль, гібіскус, ірис, кедр, ром, сушені фініки, фундук і шафран. Теплий, солодкий і дуже шлейфовий, як золото на фініках.",
+    "price": "200",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/alexandre-j.jpg"
   }
 ]
