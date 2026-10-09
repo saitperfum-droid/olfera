@@ -113,17 +113,14 @@ cartOrderBtn.addEventListener('click', () => {
   message += '\nТелефон: ' + pretty;
   message += '\nОтримання: ' + delivery;
   if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
-  const encoded = encodeURIComponent(message);
-  const chatUrl = 'https://t.me/' + TELEGRAM_USERNAME;
-  const go = () => { window.location.href = chatUrl; };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(message).then(() => {
-      alert('Текст замовлення скопійовано. У чаті вставте його і натисніть відправити.');
-      go();
-    }).catch(() => {
-      alert('Скопіюйте текст вручну і надішліть у Telegram.');
-      go();
-    });
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(message).catch(() => {});
+  const hint = document.getElementById('order-hint');
+  if (hint) hint.textContent = 'Текст скопійовано. У Telegram вставте його і натисніть відправити.';
+  window.location.href = 'tg://resolve?domain=' + TELEGRAM_USERNAME;
+  setTimeout(() => {
+    if (!document.hidden) window.location.href = 'https://t.me/' + TELEGRAM_USERNAME;
+  }, 900);
+});
   } else {
     alert(message);
     go();
