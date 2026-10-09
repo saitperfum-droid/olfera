@@ -113,7 +113,9 @@ cartOrderBtn.addEventListener('click', () => {
   message += '\nТелефон: ' + pretty;
   message += '\nОтримання: ' + delivery;
   if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(message).catch(() => {});
+  const encoded = encodeURIComponent(message);
+  window.location.href = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encoded;
+});
   const hint = document.getElementById('order-hint');
   if (hint) hint.textContent = 'Текст скопійовано. У Telegram вставте його і натисніть відправити.';
   window.location.href = 'tg://resolve?domain=' + TELEGRAM_USERNAME;
