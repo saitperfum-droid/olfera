@@ -121,11 +121,6 @@ cartOrderBtn.addEventListener('click', () => {
     if (!document.hidden) window.location.href = 'https://t.me/' + TELEGRAM_USERNAME;
   }, 900);
 });
-  } else {
-    alert(message);
-    go();
-  }
-});
 
 function mlPicker(selected, custom) {
   const preset = ML_OPTIONS.indexOf(selected) !== -1 && !custom;
