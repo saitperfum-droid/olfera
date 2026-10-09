@@ -108,5 +108,82 @@
     "unit": "1 мл",
     "available": true,
     "image": "https://saitperfum-droid.github.io/olfera/spirit-of-kings.jpg"
+  },
+  {
+    "id": 11,
+    "name": "Ambre Latte",
+    "brand": "Essential Parfums",
+    "notes": "М’який · Смачний · Соковитий",
+    "description": "Неймовірно м’який і смачний аромат. Ще один майбутній бестселер Essential Parfums: тепле молоко, амбра і соковита солодкість, яка звучить незвичайно близько до шкіри.",
+    "price": "80",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/ambre-latte.jpg"
+  },
+  {
+    "id": 12,
+    "name": "Genetic Bliss",
+    "brand": "27 87",
+    "notes": "Унісекс · Мускус · Сухе дерево",
+    "description": "Чистий унісекс, який завжди в тему. То стихає, то накочує хвилями. Сухі припудрені дерева з мускусом і відчуттям чистоти. Найкраще розкривається навесні, на сонці.",
+    "price": "200",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/genetic-bliss.jpg"
+  },
+  {
+    "id": 13,
+    "name": "Stefano Ricci",
+    "brand": "Stefano Ricci",
+    "notes": "Розкішний · Вечірній · Шлейфовий",
+    "description": "Флакон з орлом і дуже щільний, дорогий характер. Аромат для вечора: теплий, статуснй, з довгим шлейфом. Ціна за 1 мл — 280 грн.",
+    "price": "280",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/stefano-ricci.jpg"
+  },
+  {
+    "id": 14,
+    "name": "Oceanoir",
+    "brand": "Coreterno",
+    "notes": "Темний · Морський · Золотий",
+    "description": "Темна морська історія в золотій оправі. Глибокий, трохи солоний і урочистий, ніби нічне море під бароковою рамою.",
+    "price": "150",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/oceanoir.jpg"
+  },
+  {
+    "id": 15,
+    "name": "Instant Crush",
+    "brand": "Mancera",
+    "notes": "Яскравий · Солодкий · Стійкий",
+    "description": "Густий і яскравий аромат, близький до Baccarat, але гарний сам по собі. Смачний, шлейфовий і дуже стійкий. Для тих, хто любить помітні солодкі композиції.",
+    "price": "80",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/instant-crush.jpg"
+  },
+  {
+    "id": 16,
+    "name": "Halley",
+    "brand": "Tiziana Terenzi",
+    "notes": "Маракуя · Персик · Кокос",
+    "description": "Стиглі екзотичні фрукти на дерев’яному столі: багато маракуї, персик і несподівано свіжий кокос. Ваніль і лист чорної смородини збирають композицію докупи. Стійкість і шлейф неймовірні.",
+    "price": "150",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/halley.jpg"
+  },
+  {
+    "id": 17,
+    "name": "Majestic Amber",
+    "brand": "Pana Dora",
+    "notes": "Теплий · Пряний · Унісекс",
+    "description": "Теплий, пряний і густий, при цьому його легко носити. Аромат і для нього, і для неї. Новинка, яка особливо гарно звучить у холодну пору року.",
+    "price": "200",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/majestic-amber.jpg"
   }
 ]
