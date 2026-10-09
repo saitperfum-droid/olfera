@@ -134,3 +134,21 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
   .product-image { height: 180px; }
   .product-image img { max-height: 150px; }
 }
+
+.catalog-tools { margin: 0 auto 28px; max-width: 760px; }
+.catalog-tools input, .catalog-tools select, .order-fields input, .order-fields select {
+  width: 100%; border: 1px solid var(--line); background: #fff; border-radius: 12px;
+  padding: 12px 14px; font: inherit; font-size: 16px; color: var(--ink);
+}
+.filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.filter-row.selects { align-items: center; }
+.filter-chip {
+  border: 1px solid var(--line); background: #fff; color: var(--gold-dark);
+  border-radius: 999px; padding: 7px 12px; font-size: .78rem; cursor: pointer;
+}
+.filter-chip.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+.filter-reset { border: none; background: none; color: var(--muted); cursor: pointer; font-size: .78rem; padding: 8px; }
+.filter-count { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 12px; }
+.catalog-empty { text-align: center; color: var(--muted); padding: 28px 0; }
+.order-fields { display: grid; gap: 8px; margin-bottom: 12px; }
+.order-fields input[hidden] { display: none; }
