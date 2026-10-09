@@ -142,7 +142,7 @@ function openProduct(product) {
 }
 
 async function loadProducts() {
-  const products = await (await fetch('products.json?v=7')).json();
+  const products = await (await fetch('products.json?v=8')).json();
   const container = document.getElementById('products-container');
   container.innerHTML = '';
   products.forEach(product => {
@@ -151,7 +151,7 @@ async function loadProducts() {
     const card = document.createElement('article');
     card.className = 'product-card';
     const paint = () => {
-      card.innerHTML = '<div class="product-image"><img src="' + product.image + '" alt="' + product.name + '"><span class="badge available">В наявності</span></div><div class="product-info"><p class="product-brand">' + (product.brand || '') + '</p><h3>' + product.name + '</h3><p class="product-notes">' + product.notes + '</p><p class="product-price">' + price + ' ₴ <span class="unit">/ 1 мл</span></p>' + mlPicker(state.ml, state.custom) + '<p class="line-total">За ' + state.ml + ' мл: ' + (price * state.ml).toLocaleString('uk-UA') + ' ₴</p><span class="tap-hint">Натисніть, щоб прочитати опис</span><button class="btn btn-outline add-to-cart-btn">В кошик</button></div>';
+      card.innerHTML = '<div class="product-image"><img src="' + product.image + '" alt="' + product.name + '"><span class="badge available">В наявності</span></div><div class="product-info"><p class="product-brand">' + (product.brand || '') + '</p><h3>' + product.name + '</h3><p class="product-notes">' + product.notes + '</p><p class="product-notes">' + (product.description || "") + '</p><p class="product-price">' + price + ' ₴ <span class="unit">/ 1 мл</span></p>' + mlPicker(state.ml, state.custom) + '<p class="line-total">За ' + state.ml + ' мл: ' + (price * state.ml).toLocaleString('uk-UA') + ' ₴</p><span class="tap-hint">Натисніть, щоб прочитати опис</span><button class="btn btn-outline add-to-cart-btn">В кошик</button></div>';
       bindMl(card, () => state, (next, rerender) => { state.ml = next.ml; state.custom = next.custom; if (rerender) paint(); });
       card.querySelector('.product-image').addEventListener('click', () => openProduct(product));
       card.querySelector('h3').addEventListener('click', () => openProduct(product));
