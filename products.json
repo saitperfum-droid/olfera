@@ -206,6 +206,17 @@
     "price": "200",
     "unit": "1 мл",
     "available": true,
-    "image": "https://saitperfum-droid.github.io/olfera/alexandre-j.jpg"
+    "image": "https://saitperfum-droid.github.io/olfera/alexandre-clean.jpg"
+  },
+  {
+    "id": 20,
+    "name": "Chimilka",
+    "brand": "Vilhelm Parfumerie",
+    "notes": "Османтус · Шафран · Шкіра",
+    "description": "Тепла шкіряно-квіткова історія: дубовий мох, китайський османтус, фіалка, кмин і шафран. У базі амбра, мускус, пачулі й цукор. Солодкий, але не дитячий, із м’якою шкірою.",
+    "price": "160",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/chimilka.jpg"
   }
 ]
