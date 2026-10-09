@@ -110,7 +110,7 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 .cart-close, .modal-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--muted); }
 .cart-items { flex: 1; overflow: auto; padding: 12px 20px; }
 .cart-item { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-.cart-footer { padding: 16px 20px 24px; border-top: 1px solid var(--line); }
+.cart-footer { padding: 16px 20px calc(28px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); position: sticky; bottom: 0; background: #fffdf8; }
 .cart-total { display: flex; justify-content: space-between; margin-bottom: 12px; }
 .cart-order-btn { width: 100%; }
 .product-modal {
