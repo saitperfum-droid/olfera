@@ -53,5 +53,60 @@
     "unit": "1 мл",
     "available": true,
     "image": "https://saitperfum-droid.github.io/olfera/IMG_0534.jpeg"
+  },
+  {
+    "id": 6,
+    "name": "Good Girl Gone Bad",
+    "brand": "Kilian",
+    "notes": "Кремовий · Квітковий · Обволікаючий",
+    "description": "Дуже ніжний кремовий вершково-квітковий аромат. Наче нектар квітів зібрали, зварили в молоці і додали до парфуму. Лягає на тіло як масло. Нічого схожого за якістю ще не зустрічав.",
+    "price": "200",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/good-girl-gone-bad.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Ganymede",
+    "brand": "Marc-Antoine Barrois",
+    "notes": "Замша · Фіалка · Мандарин",
+    "description": "Ганімед побудований на замшевих нотах, але відходить від звичної структури. Шкіра стає м’якшою поруч із фіалкою, а мандарин дає бадьорість і кислинку з перших хвилин.",
+    "price": "150",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/ganymede.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Painter",
+    "brand": "Genyum",
+    "notes": "Свіжий · Літній · Унісекс",
+    "description": "Аромат справжньої майстерності художника. Розкривається як олійні фарби на ватмані, є також біле дерево. Свіжий, однозначно літній і абсолютний унісекс.",
+    "price": "150",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/painter.jpg"
+  },
+  {
+    "id": 9,
+    "name": "Black Afgano",
+    "brand": "Nasomatto",
+    "notes": "Смола · Дим · Східний",
+    "description": "Густий, смолянистий, димний, гарячий і обволікаючий, східний, але при цьому медитативний. Дуже компліментарний, шалено шлейфовий і стійкий.",
+    "price": "240",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/black-afgano.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Spirit of Kings",
+    "brand": "Spirit of Kings",
+    "notes": "Чоловічий · Цитрус · На кожен день",
+    "description": "Свіжий чоловічий і дуже компліментарний аромат, як біла сорочка. Цитрусова історія, що нагадує Virgin і Imagination. Те, що треба на кожен день.",
+    "price": "150",
+    "unit": "1 мл",
+    "available": true,
+    "image": "https://saitperfum-droid.github.io/olfera/spirit-of-kings.jpg"
   }
 ]
