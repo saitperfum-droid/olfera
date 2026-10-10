@@ -291,6 +291,8 @@ function familiesOf(product) {
 }
 let allProducts = [];
 let activeFamily = '';
+let catalogPage = 1;
+const PAGE_SIZE = 10;
 
 function paintCard(product) {
   const price = Number(product.price);
@@ -310,8 +312,10 @@ function paintCard(product) {
   paint();
   return card;
 }
-function renderProducts() {
+function renderProducts(resetPage) {
+  if (resetPage) catalogPage = 1;
   const container = document.getElementById('products-container');
+  const pager = document.getElementById('catalog-pager');
   const query = (document.getElementById('search-input').value || '').trim().toLowerCase();
   const brand = document.getElementById('brand-filter').value;
   const price = document.getElementById('price-filter').value;
@@ -329,12 +333,31 @@ function renderProducts() {
   });
   container.innerHTML = '';
   const count = document.getElementById('filter-count');
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  if (catalogPage > pages) catalogPage = pages;
   count.textContent = filtered.length ? ('Знайдено: ' + filtered.length) : '';
   if (!filtered.length) {
     container.innerHTML = '<p class="catalog-empty">Нічого не знайдено. Спробуйте іншу назву або скиньте фільтр.</p>';
+    if (pager) pager.innerHTML = '';
     return;
   }
-  filtered.forEach(product => container.appendChild(paintCard(product)));
+  filtered.slice((catalogPage - 1) * PAGE_SIZE, catalogPage * PAGE_SIZE).forEach(product => container.appendChild(paintCard(product)));
+  if (!pager) return;
+  if (pages < 2) { pager.innerHTML = ''; return; }
+  let html = '<button type="button" class="page-btn" data-page="prev"' + (catalogPage === 1 ? ' disabled' : '') + '>Назад</button>';
+  for (let i = 1; i <= pages; i++) html += '<button type="button" class="page-btn' + (i === catalogPage ? ' active' : '') + '" data-page="' + i + '">' + i + '</button>';
+  html += '<button type="button" class="page-btn" data-page="next"' + (catalogPage === pages ? ' disabled' : '') + '>Далі</button>';
+  pager.innerHTML = html;
+  pager.querySelectorAll('.page-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.disabled) return;
+      if (btn.dataset.page === 'prev') catalogPage -= 1;
+      else if (btn.dataset.page === 'next') catalogPage += 1;
+      else catalogPage = Number(btn.dataset.page);
+      renderProducts(false);
+      document.getElementById('catalog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 }
 function setupFilters() {
   const familyRow = document.getElementById('family-filters');
@@ -343,7 +366,7 @@ function setupFilters() {
     btn.addEventListener('click', () => {
       activeFamily = activeFamily === btn.dataset.family ? '' : btn.dataset.family;
       familyRow.querySelectorAll('.filter-chip').forEach(chip => chip.classList.toggle('active', chip.dataset.family === activeFamily));
-      renderProducts();
+      renderProducts(true);
     });
   });
   const brandSelect = document.getElementById('brand-filter');
@@ -363,13 +386,13 @@ function setupFilters() {
     document.getElementById('price-filter').value = '';
     activeFamily = '';
     familyRow.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
-    renderProducts();
+    renderProducts(true);
   });
 }
 async function loadProducts() {
   allProducts = await (await fetch('products.json?v=15')).json();
   setupFilters();
-  renderProducts();
+  renderProducts(true);
 }
 
 updateCartUI();
