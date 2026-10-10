@@ -451,7 +451,7 @@ function fillReviewProducts() {
   reviewProducts.innerHTML = allProducts.map(p => '<option value="' + escapeHtml(p.name) + '">').join('');
 }
 function loadReviews() {
-  fetch(REVIEWS_API).then(r => r.ok ? r.json() : []).then(data => {
+  fetch(REVIEWS_API + '?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : []).then(data => {
     publishedReviews = (data || []).slice().reverse().map(r => ({
       name: escapeHtml(r.name || 'Гість'),
       product: escapeHtml(r.product || ''),
@@ -484,15 +484,17 @@ if (reviewForm) {
         body: JSON.stringify(review)
       });
       if (!res.ok) throw new Error('save');
+      publishedReviews.unshift({
+        name: escapeHtml(review.name),
+        product: escapeHtml(review.product),
+        text: escapeHtml(review.text),
+        stars: review.stars
+      });
+      renderReviews();
       reviewForm.reset();
       paintStars(5);
-      if (status) status.textContent = 'Дякуємо! Відгук збережено і вже видно на сайті.';
+      if (status) status.textContent = 'Дякуємо! Відгук уже на сайті.';
       loadReviews();
-      const message = 'Новий відгук OLFÉRA\n\nІм’я: ' + review.name + '\nОцінка: ' + stars + '/5' + (review.product ? '\nАромат: ' + review.product : '') + '\n\n' + review.text;
-      const url = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encodeURIComponent(message);
-      const link = document.createElement('a');
-      link.href = url; link.target = '_blank'; link.rel = 'noopener';
-      document.body.appendChild(link); link.click(); link.remove();
     } catch (err) {
       if (status) status.textContent = 'Не вдалося зберегти. Спробуйте ще раз.';
     }
