@@ -465,7 +465,10 @@ if (reviewForm) {
     const product = document.getElementById('review-product').value.trim();
     const text = document.getElementById('review-text').value.trim();
     const stars = Number(reviewStars.dataset.value) || 5;
-    if (name.length < 2 || text.length < 3) return;
+    if (!name || !text) {
+      if (status) status.textContent = 'Напишіть ім’я і текст відгуку.';
+      return;
+    }
     const status = document.getElementById('review-status');
     if (status) status.textContent = 'Зберігаю відгук...';
     const review = { name: name.slice(0, 40), product: product.slice(0, 60), text: text.slice(0, 500), stars, date: new Date().toISOString() };
