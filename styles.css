@@ -167,3 +167,21 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 .shop-grid img{width:100%;height:420px;object-fit:cover;display:block}
 .shop-grid figcaption{padding:10px 14px 14px;text-align:center;color:#8a7760;font-size:14px}
 @media(max-width:700px){.shop-grid{grid-template-columns:1fr}.shop-grid img{height:280px}}
+
+.reviews { background: #fffdf8; }
+.reviews-list { display: grid; gap: 14px; margin-bottom: 28px; }
+.review-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
+.review-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.review-name { font-weight: 500; }
+.review-stars { color: var(--gold); letter-spacing: 2px; }
+.review-product { color: var(--muted); font-size: .82rem; margin: 4px 0 8px; }
+.review-text { font-size: .95rem; }
+.review-empty { text-align: center; color: var(--muted); }
+.review-form { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: grid; gap: 12px; max-width: 640px; margin: 0 auto; }
+.review-form h3 { font-size: 1.6rem; color: var(--gold-dark); text-align: center; }
+.review-form input, .review-form textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font: inherit; background: #fffdf8; }
+.review-form textarea { min-height: 110px; resize: vertical; }
+.stars { display: flex; justify-content: center; gap: 6px; }
+.stars button { background: none; border: none; font-size: 1.8rem; color: #ddd; cursor: pointer; line-height: 1; }
+.stars button.on { color: var(--gold); }
+.review-note, .review-status { text-align: center; color: var(--muted); font-size: .82rem; }
