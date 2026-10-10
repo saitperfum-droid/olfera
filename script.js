@@ -390,7 +390,12 @@ function setupFilters() {
   });
 }
 async function loadProducts() {
-  allProducts = await (await fetch('products.json?v=15')).json();
+  try {
+    const live = await (await fetch('https://crudcrud.com/api/22b8f8822db0418a98f48e6cd75a7ec8/catalogstate/6acaaa83cbfaea03e8fda0a5')).json();
+    allProducts = (live && live.products && live.products.length) ? live.products : await (await fetch('products.json?v=15')).json();
+  } catch (e) {
+    allProducts = await (await fetch('products.json?v=15')).json();
+  }
   fillReviewProducts();
   setupFilters();
   renderProducts(true);
