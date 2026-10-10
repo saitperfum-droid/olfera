@@ -161,3 +161,9 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 .page-btn{min-width:42px;height:40px;padding:0 12px;border:1px solid #d9c7a3;background:#fff;color:#5c4a2a;border-radius:8px;font:inherit}
 .page-btn.active{background:#c4a35a;color:#fff;border-color:#c4a35a}
 .page-btn:disabled{opacity:.4}
+
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.shop-grid figure{margin:0;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #efe6d6}
+.shop-grid img{width:100%;height:420px;object-fit:cover;display:block}
+.shop-grid figcaption{padding:10px 14px 14px;text-align:center;color:#8a7760;font-size:14px}
+@media(max-width:700px){.shop-grid{grid-template-columns:1fr}.shop-grid img{height:280px}}
