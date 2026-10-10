@@ -115,19 +115,17 @@ cartOrderBtn.addEventListener('click', () => {
   message += '\nОтримання: ' + delivery;
   if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
   const encoded = encodeURIComponent(message);
-  const appUrl = 'tg://resolve?domain=' + TELEGRAM_USERNAME + '&text=' + encoded;
   const webUrl = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encoded;
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(message).catch(() => {});
   const link = document.createElement('a');
-  link.href = appUrl;
-  link.style.display = 'none';
+  link.href = webUrl;
+  link.target = '_blank';
+  link.rel = 'noopener';
   document.body.appendChild(link);
   link.click();
-  setTimeout(() => {
-    if (!document.hidden) window.location.href = webUrl;
-  }, 800);
+  link.remove();
   const hint = document.getElementById('order-hint');
-  if (hint) hint.innerHTML = 'Якщо Telegram не відкрився, <a href="' + webUrl + '">натисни тут</a>. Текст уже скопійовано: у чаті встав його.';
+  if (hint) hint.innerHTML = 'Якщо чат не відкрився, <a href="' + webUrl + '" target="_blank">натисни тут</a>.';
 });
 
 
@@ -159,9 +157,15 @@ if (cartIgBtn) cartIgBtn.addEventListener('click', () => {
   if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(message).catch(() => {});
   const url = 'https://ig.me/m/' + INSTAGRAM_USERNAME;
+  const link = document.createElement('a');
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
   const hint = document.getElementById('order-hint');
-  if (hint) hint.textContent = 'Текст скопійовано. У Instagram вставте його в повідомлення.';
-  window.location.href = url;
+  if (hint) hint.innerHTML = 'Текст скопійовано. Якщо Instagram не відкрився, <a href="' + url + '" target="_blank">натисни тут</a>.';
 });
 
 function mlPicker(selected, custom) {
