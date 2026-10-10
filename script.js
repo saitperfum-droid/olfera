@@ -391,6 +391,7 @@ function setupFilters() {
 }
 async function loadProducts() {
   allProducts = await (await fetch('products.json?v=15')).json();
+  fillReviewProducts();
   setupFilters();
   renderProducts(true);
 }
@@ -400,4 +401,96 @@ loadProducts();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+
+
+const reviewsList = document.getElementById('reviews-list');
+const reviewForm = document.getElementById('review-form');
+const reviewStars = document.getElementById('review-stars');
+const reviewProducts = document.getElementById('review-products');
+let publishedReviews = [];
+
+function starsText(n) {
+  const v = Math.max(1, Math.min(5, Number(n) || 5));
+  return '★★★★★'.slice(0, v) + '☆☆☆☆☆'.slice(0, 5 - v);
+}
+function paintStars(value) {
+  if (!reviewStars) return;
+  reviewStars.dataset.value = String(value);
+  reviewStars.querySelectorAll('button').forEach(btn => {
+    btn.classList.toggle('on', Number(btn.dataset.star) <= value);
+  });
+}
+if (reviewStars) {
+  paintStars(5);
+  reviewStars.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    paintStars(Number(btn.dataset.star));
+  });
+}
+function renderReviews() {
+  if (!reviewsList) return;
+  const mine = JSON.parse(localStorage.getItem('olfera_reviews') || '[]').map(r => ({
+    name: escapeHtml(r.name || 'Гість'),
+    product: escapeHtml(r.product || ''),
+    text: escapeHtml(r.text || ''),
+    stars: r.stars || 5,
+    pending: true
+  }));
+  const all = publishedReviews.concat(mine);
+  if (!all.length) {
+    reviewsList.innerHTML = '<p class="review-empty">Поки що немає відгуків. Напишіть перший.</p>';
+    return;
+  }
+  reviewsList.innerHTML = all.map(r => '<article class="review-card"><div class="review-top"><strong class="review-name">' + r.name + '</strong><span class="review-stars">' + starsText(r.stars) + '</span></div>' + (r.product ? '<p class="review-product">' + r.product + '</p>' : '') + '<p class="review-text">' + r.text + '</p>' + (r.pending ? '<p class="review-product">На перевірці</p>' : '') + '</article>').join('');
+}
+function fillReviewProducts() {
+  if (!reviewProducts || !Array.isArray(allProducts)) return;
+  reviewProducts.innerHTML = allProducts.map(p => '<option value="' + escapeHtml(p.name) + '">').join('');
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, ch => ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[ch]));
+}
+fetch('reviews.json').then(r => r.ok ? r.json() : []).then(data => {
+  publishedReviews = (data || []).map(r => ({
+    name: escapeHtml(r.name || 'Гість'),
+    product: escapeHtml(r.product || ''),
+    text: escapeHtml(r.text || ''),
+    stars: r.stars || 5
+  }));
+  renderReviews();
+}).catch(() => renderReviews());
+
+if (reviewForm) {
+  reviewForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('review-name').value.trim();
+    const product = document.getElementById('review-product').value.trim();
+    const text = document.getElementById('review-text').value.trim();
+    const stars = Number(reviewStars.dataset.value) || 5;
+    if (!name || !text) return;
+    const review = { name, product, text, stars, date: new Date().toISOString() };
+    const mine = JSON.parse(localStorage.getItem('olfera_reviews') || '[]');
+    mine.unshift(review);
+    localStorage.setItem('olfera_reviews', JSON.stringify(mine.slice(0, 20)));
+    renderReviews();
+    let message = 'Відгук OLFÉRA\n\n';
+    message += 'Ім’я: ' + name + '\n';
+    message += 'Оцінка: ' + stars + '/5\n';
+    if (product) message += 'Аромат: ' + product + '\n';
+    message += '\n' + text;
+    const url = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encodeURIComponent(message);
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    reviewForm.reset();
+    paintStars(5);
+    const status = document.getElementById('review-status');
+    if (status) status.textContent = 'Дякуємо! Відкрився Telegram — надішліть повідомлення, і відгук потрапить у магазин.';
+  });
 }
