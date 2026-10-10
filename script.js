@@ -156,7 +156,7 @@ if (cartIgBtn) cartIgBtn.addEventListener('click', () => {
   message += '\nОтримання: ' + delivery;
   if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(message).catch(() => {});
-  const url = 'https://ig.me/m/' + INSTAGRAM_USERNAME;
+  const url = 'https://ig.me/m/' + INSTAGRAM_USERNAME + '?text=' + encodeURIComponent(message);
   const link = document.createElement('a');
   link.href = url;
   link.target = '_blank';
