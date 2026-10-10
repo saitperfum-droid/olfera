@@ -114,10 +114,19 @@ cartOrderBtn.addEventListener('click', () => {
   message += '\nОтримання: ' + delivery;
   if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
   const encoded = encodeURIComponent(message);
-  window.location.href = 'tg://resolve?domain=' + TELEGRAM_USERNAME + '&text=' + encoded;
+  const appUrl = 'tg://resolve?domain=' + TELEGRAM_USERNAME + '&text=' + encoded;
+  const webUrl = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encoded;
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(message).catch(() => {});
+  const link = document.createElement('a');
+  link.href = appUrl;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
   setTimeout(() => {
-    if (!document.hidden) window.location.href = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encoded;
-  }, 700);
+    if (!document.hidden) window.location.href = webUrl;
+  }, 800);
+  const hint = document.getElementById('order-hint');
+  if (hint) hint.innerHTML = 'Якщо Telegram не відкрився, <a href="' + webUrl + '">натисни тут</a>. Текст уже скопійовано: у чаті встав його.';
 });
 
 function mlPicker(selected, custom) {
