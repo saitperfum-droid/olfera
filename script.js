@@ -1,4 +1,4 @@
-const TELEGRAM_USERNAME = 'rtich_you';
+const TELEGRAM_USERNAME = 'Shneerzon';
 const INSTAGRAM_USERNAME = 'olfer_aperfume';
 const WHATSAPP_NUMBER = '380962566574';
 const ML_OPTIONS = [1, 2, 3, 5, 10];
