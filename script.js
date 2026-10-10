@@ -1,5 +1,6 @@
 const TELEGRAM_USERNAME = 'rtich_you';
 const INSTAGRAM_USERNAME = 'olfer_aperfume';
+const WHATSAPP_NUMBER = '380962566574';
 const ML_OPTIONS = [1, 2, 3, 5, 10];
 let cart = JSON.parse(localStorage.getItem('olfera_cart')) || [];
 
@@ -166,6 +167,43 @@ if (cartIgBtn) cartIgBtn.addEventListener('click', () => {
   link.remove();
   const hint = document.getElementById('order-hint');
   if (hint) hint.innerHTML = 'Текст скопійовано. Якщо Instagram не відкрився, <a href="' + url + '" target="_blank">натисни тут</a>.';
+});
+
+
+const cartWaBtn = document.getElementById('cart-wa-btn');
+if (cartWaBtn) cartWaBtn.addEventListener('click', () => {
+  if (!cart.length) return alert('Кошик порожній');
+  const name = (orderName && orderName.value.trim()) || '';
+  const phone = (orderPhone && orderPhone.value.trim()) || '';
+  const delivery = (orderDelivery && orderDelivery.value) || 'Самовивіз, Європейська 6/5';
+  const np = (orderNp && orderNp.value.trim()) || '';
+  if (!name) return alert('Напишіть ім’я');
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length < 9) return alert('Напишіть телефон');
+  const pretty = digits.length === 9 ? '+380' + digits : (digits.startsWith('380') ? '+' + digits : (digits.startsWith('0') ? '+38' + digits : phone));
+  if (delivery === 'Нова Пошта' && np.length < 3) return alert('Напишіть місто і відділення Нової Пошти');
+  saveOrder();
+  let message = 'Вітаю! Хочу замовити:\n\n';
+  let total = 0;
+  cart.forEach(item => {
+    const ml = item.ml || 1;
+    const line = item.price * ml * item.qty;
+    total += line;
+    message += '• ' + item.name + ' (' + (item.brand || '') + ') — ' + ml + ' мл × ' + item.price + ' ₴ = ' + line + ' ₴\n';
+  });
+  message += '\nРазом: ' + total.toLocaleString('uk-UA') + ' ₴';
+  message += '\n\nІм’я: ' + name;
+  message += '\nТелефон: ' + pretty;
+  message += '\nОтримання: ' + delivery;
+  if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
+  const url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message);
+  const link = document.createElement('a');
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 });
 
 function mlPicker(selected, custom) {
