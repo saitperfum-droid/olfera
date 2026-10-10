@@ -1,4 +1,5 @@
 const TELEGRAM_USERNAME = 'rtich_you';
+const INSTAGRAM_USERNAME = 'olfer_aperfume';
 const ML_OPTIONS = [1, 2, 3, 5, 10];
 let cart = JSON.parse(localStorage.getItem('olfera_cart')) || [];
 
@@ -127,6 +128,40 @@ cartOrderBtn.addEventListener('click', () => {
   }, 800);
   const hint = document.getElementById('order-hint');
   if (hint) hint.innerHTML = 'Якщо Telegram не відкрився, <a href="' + webUrl + '">натисни тут</a>. Текст уже скопійовано: у чаті встав його.';
+});
+
+
+const cartIgBtn = document.getElementById('cart-ig-btn');
+if (cartIgBtn) cartIgBtn.addEventListener('click', () => {
+  if (!cart.length) return alert('Кошик порожній');
+  const name = (orderName && orderName.value.trim()) || '';
+  const phone = (orderPhone && orderPhone.value.trim()) || '';
+  const delivery = (orderDelivery && orderDelivery.value) || 'Самовивіз, Європейська 6/5';
+  const np = (orderNp && orderNp.value.trim()) || '';
+  if (!name) return alert('Напишіть ім’я');
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length < 9) return alert('Напишіть телефон');
+  const pretty = digits.length === 9 ? '+380' + digits : (digits.startsWith('380') ? '+' + digits : (digits.startsWith('0') ? '+38' + digits : phone));
+  if (delivery === 'Нова Пошта' && np.length < 3) return alert('Напишіть місто і відділення Нової Пошти');
+  saveOrder();
+  let message = 'Вітаю! Хочу замовити:\n\n';
+  let total = 0;
+  cart.forEach(item => {
+    const ml = item.ml || 1;
+    const line = item.price * ml * item.qty;
+    total += line;
+    message += '• ' + item.name + ' (' + (item.brand || '') + ') — ' + ml + ' мл × ' + item.price + ' ₴ = ' + line + ' ₴\n';
+  });
+  message += '\nРазом: ' + total.toLocaleString('uk-UA') + ' ₴';
+  message += '\n\nІм’я: ' + name;
+  message += '\nТелефон: ' + pretty;
+  message += '\nОтримання: ' + delivery;
+  if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(message).catch(() => {});
+  const url = 'https://ig.me/m/' + INSTAGRAM_USERNAME;
+  const hint = document.getElementById('order-hint');
+  if (hint) hint.textContent = 'Текст скопійовано. У Instagram вставте його в повідомлення.';
+  window.location.href = url;
 });
 
 function mlPicker(selected, custom) {
