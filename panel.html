@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Адміністратор — OLFÉRA</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Montserrat,sans-serif;background:#f7f3ec;color:#1c1a17}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+h1{font-weight:500;font-size:1.6rem}
+.card{background:#fff;border:1px solid rgba(154,123,47,.22);border-radius:14px;padding:16px;margin:12px 0}
+label{display:block;font-size:.78rem;color:#6f675d;margin:8px 0 4px}
+input,textarea{width:100%;box-sizing:border-box;border:1px solid #e2d7c4;border-radius:8px;padding:10px;font:inherit;background:#fff}
+button{border:0;border-radius:8px;padding:10px 14px;background:#9a7b2f;color:#fff;font:inherit;cursor:pointer}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.ghost{background:#fff;color:#7a6124;border:1px solid #c9a84c}
+.danger{background:#b44545}
+.note{color:#6f675d;font-size:.85rem}
+.tabs{display:flex;gap:8px;margin:16px 0}
+.tabs button{background:#fff;color:#7a6124;border:1px solid #c9a84c}
+.tabs button.active{background:#9a7b2f;color:#fff;border-color:#9a7b2f}
+.stars{color:#9a7b2f}
+.status{min-height:1.2em;color:#7a6124}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OLFÉRA — адміністратор</h1>
+  <p class="note">Нова панель · пароль 256574</p>
+  <div id="login" class="card">
+    <label>Пароль</label>
+    <input id="pin" inputmode="numeric" type="password" autocomplete="current-password">
+    <button id="enter" style="margin-top:10px">Увійти</button>
+  </div>
+  <div id="panel" hidden>
+    <div class="tabs">
+      <button id="tab-products" class="active">Аромати</button>
+      <button id="tab-reviews">Відгуки</button>
+    </div>
+    <p class="status" id="status"></p>
+    <div id="products-view">
+      <div class="actions">
+        <button id="add">Додати аромат</button>
+        <button id="save">Зберегти каталог</button>
+      </div>
+      <div id="list"></div>
+    </div>
+    <div id="reviews-view" hidden>
+      <div id="reviews"></div>
+    </div>
+  </div>
+</div>
+<script>
+const PIN = '256574';
+const API = 'https://crudcrud.com/api/22b8f8822db0418a98f48e6cd75a7ec8';
+const CATALOG_ID = '6acaaa83cbfaea03e8fda0a5';
+let products = [];
+const login = document.getElementById('login');
+const panel = document.getElementById('panel');
+const list = document.getElementById('list');
+const statusEl = document.getElementById('status');
+function setStatus(t){ statusEl.textContent = t || ''; }
+function esc(v){ return String(v || '').replace(/&/g,'&').replace(/"/g,'"').replace(/</g,'<'); }
+
+document.getElementById('enter').onclick = async () => {
+  if (document.getElementById('pin').value !== PIN) return alert('Невірний пароль');
+  login.hidden = true;
+  panel.hidden = false;
+  setStatus('Завантажую аромати...');
+  try {
+    const base = await (await fetch('products.json?v=16')).json();
+    products = Array.isArray(base) ? base : [];
+  } catch (e) {
+    products = [];
+  }
+  try {
+    const live = await (await fetch(API + '/catalogstate/' + CATALOG_ID)).json();
+    if (live && Array.isArray(live.products) && live.products.length) products = live.products;
+  } catch (e) {}
+  render();
+  setStatus('Завантажено: ' + products.length);
+};
+
+function render() {
+  list.innerHTML = '';
+  if (!products.length) {
+    list.innerHTML = '<p class="note">Список порожній. Натисни «Додати аромат».</p>';
+    return;
+  }
+  products.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="row"><strong>' + esc(p.name || 'Новий аромат') + '</strong>' +
+      '<button class="ghost toggle">' + (p.available ? 'В наявності' : 'Немає') + '</button></div>' +
+      '<label>Назва</label><input data-k="name" value="' + esc(p.name) + '">' +
+      '<label>Бренд</label><input data-k="brand" value="' + esc(p.brand) + '">' +
+      '<label>Ціна за 1 мл, ₴</label><input data-k="price" value="' + esc(p.price) + '">' +
+      '<label>Ноти</label><input data-k="notes" value="' + esc(p.notes) + '">' +
+      '<label>Опис</label><textarea data-k="description">' + esc(p.description) + '</textarea>' +
+      '<label>Посилання на фото</label><input data-k="image" value="' + esc(p.image) + '">' +
+      '<div class="actions"><button class="danger del">Видалити</button></div>';
+    card.querySelector('.toggle').onclick = () => { p.available = !p.available; render(); };
+    card.querySelector('.del').onclick = () => {
+      if (!confirm('Видалити «' + (p.name || 'аромат') + '»?')) return;
+      products.splice(i, 1);
+      render();
+    };
+    card.querySelectorAll('input,textarea').forEach(el => el.oninput = () => { p[el.dataset.k] = el.value; });
+    list.appendChild(card);
+  });
+}
+
+document.getElementById('add').onclick = () => {
+  products.unshift({ id: Date.now(), name: '', brand: '', notes: '', description: '', price: '100', unit: '1 мл', available: true, image: '' });
+  render();
+};
+document.getElementById('save').onclick = async () => {
+  setStatus('Зберігаю каталог...');
+  try {
+    const res = await fetch(API + '/catalogstate/' + CATALOG_ID, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ products })
+    });
+    setStatus(res.ok ? 'Каталог збережено. Онови головну сторінку сайту.' : 'Не вдалося зберегти.');
+  } catch (e) {
+    setStatus('Немає зв’язку. Спробуй ще раз.');
+  }
+};
+document.getElementById('tab-products').onclick = () => showTab('products');
+document.getElementById('tab-reviews').onclick = () => { showTab('reviews'); loadReviews(); };
+function showTab(name) {
+  document.getElementById('products-view').hidden = name !== 'products';
+  document.getElementById('reviews-view').hidden = name !== 'reviews';
+  document.getElementById('tab-products').classList.toggle('active', name === 'products');
+  document.getElementById('tab-reviews').classList.toggle('active', name === 'reviews');
+}
+async function loadReviews() {
+  const box = document.getElementById('reviews');
+  box.innerHTML = '<p class="note">Завантажую відгуки...</p>';
+  try {
+    const reviews = await (await fetch(API + '/reviews')).json();
+    if (!reviews.length) { box.innerHTML = '<p class="note">Відгуків немає.</p>'; return; }
+    box.innerHTML = '';
+    reviews.slice().reverse().forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = '<div class="row"><strong>' + esc(r.name) + '</strong><span class="stars">' + '★★★★★'.slice(0, r.stars || 5) + '</span></div>' +
+        '<p class="note">' + esc(r.product || '') + '</p><p>' + esc(r.text || '') + '</p>' +
+        '<div class="actions"><button class="danger">Видалити відгук</button></div>';
+      card.querySelector('button').onclick = async () => {
+        if (!confirm('Видалити цей відгук?')) return;
+        await fetch(API + '/reviews/' + r._id, { method: 'DELETE' });
+        loadReviews();
+      };
+      box.appendChild(card);
+    });
+  } catch (e) {
+    box.innerHTML = '<p class="note">Не вдалося завантажити відгуки.</p>';
+  }
+}
+</script>
+</body>
+</html>
