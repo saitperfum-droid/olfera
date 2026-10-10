@@ -114,7 +114,10 @@ cartOrderBtn.addEventListener('click', () => {
   message += '\nОтримання: ' + delivery;
   if (delivery === 'Нова Пошта') message += '\nНова Пошта: ' + np;
   const encoded = encodeURIComponent(message);
-  window.location.href = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encoded;
+  window.location.href = 'tg://resolve?domain=' + TELEGRAM_USERNAME + '&text=' + encoded;
+  setTimeout(() => {
+    if (!document.hidden) window.location.href = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encoded;
+  }, 700);
 });
 
 function mlPicker(selected, custom) {
