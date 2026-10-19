@@ -24,6 +24,17 @@ if (cartBtn) cartBtn.addEventListener('click', openCart);
 if (cartClose) cartClose.addEventListener('click', closeCart);
 if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
 
+/* Mobile menu */
+(function(){
+  const toggle = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('.nav');
+  if (!toggle || !nav) return;
+  toggle.addEventListener('click', function(){ nav.classList.toggle('open'); });
+  nav.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ nav.classList.remove('open'); });
+  });
+})();
+
 function updateCartUI() {
   const count = document.querySelector('.cart-count');
   const total = cart.reduce((s, i) => s + i.price * (i.ml || 1) * i.qty, 0);
@@ -56,33 +67,34 @@ function removeFromCart(id, ml) {
   saveCart();
 }
 
-const savedOrder = JSON.parse(localStorage.getItem('olfera_order') || '{}');
 function saveOrderFields() {
   const name = (document.getElementById('order-name') || {}).value || '';
   const phone = (document.getElementById('order-phone') || {}).value || '';
-  const city = (document.getElementById('order-city') || {}).value || '';
-  const address = (document.getElementById('order-address') || {}).value || '';
-  localStorage.setItem('olfera_order', JSON.stringify({ name, phone, city, address }));
+  const delivery = (document.getElementById('order-delivery') || {}).value || '';
+  const np = (document.getElementById('order-np') || {}).value || '';
+  localStorage.setItem('olfera_order', JSON.stringify({ name, phone, delivery, np }));
 }
 function fillOrderFields() {
-  const o = JSON.parse(localStorage.getItem('olfera_order') || '{}');
-  ['name','phone','city','address'].forEach(k => {
-    const el = document.getElementById('order-' + k);
-    if (el && o[k]) el.value = o[k];
-  });
+  try {
+    const o = JSON.parse(localStorage.getItem('olfera_order') || '{}');
+    if (o.name && document.getElementById('order-name')) document.getElementById('order-name').value = o.name;
+    if (o.phone && document.getElementById('order-phone')) document.getElementById('order-phone').value = o.phone;
+    if (o.delivery && document.getElementById('order-delivery')) document.getElementById('order-delivery').value = o.delivery;
+    if (o.np && document.getElementById('order-np')) document.getElementById('order-np').value = o.np;
+  } catch (e) {}
 }
 
 function buildOrderMessage() {
   saveOrderFields();
   const name = (document.getElementById('order-name') || {}).value || '';
   const phone = (document.getElementById('order-phone') || {}).value || '';
-  const city = (document.getElementById('order-city') || {}).value || '';
-  const address = (document.getElementById('order-address') || {}).value || '';
+  const delivery = (document.getElementById('order-delivery') || {}).value || '';
+  const np = (document.getElementById('order-np') || {}).value || '';
   let message = 'Замовлення з olfera.store\n\n';
-  if (name) message += 'Ім\'я: ' + name + '\n';
+  if (name) message += "Ім'я: " + name + '\n';
   if (phone) message += 'Телефон: ' + phone + '\n';
-  if (city) message += 'Місто: ' + city + '\n';
-  if (address) message += 'Адреса: ' + address + '\n';
+  if (delivery) message += 'Доставка: ' + delivery + '\n';
+  if (np) message += 'НП: ' + np + '\n';
   message += '\n';
   cart.forEach(item => {
     const ml = item.ml || 1;
@@ -98,25 +110,18 @@ function orderTelegram() {
   if (!cart.length) { alert('Кошик порожній'); return; }
   const message = buildOrderMessage();
   const url = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encodeURIComponent(message);
-  const webUrl = 'https://web.telegram.org/k/#@' + TELEGRAM_USERNAME;
   window.open(url, '_blank');
-  const hint = document.getElementById('order-hint');
-  if (hint) hint.innerHTML = 'Якщо чат не відкрився, <a href="' + webUrl + '" target="_blank">натисни тут</a>.';
 }
 function orderInstagram() {
   if (!cart.length) { alert('Кошик порожній'); return; }
   const message = buildOrderMessage();
-  navigator.clipboard.writeText(message).catch(() => {});
-  const url = 'https://ig.me/m/' + INSTAGRAM_USERNAME;
-  window.open(url, '_blank');
-  const hint = document.getElementById('order-hint');
-  if (hint) hint.innerHTML = 'Текст скопійовано. Якщо Instagram не відкрився, <a href="' + url + '" target="_blank">натисни тут</a>.';
+  navigator.clipboard.writeText(message).catch(function(){});
+  window.open('https://ig.me/m/' + INSTAGRAM_USERNAME, '_blank');
 }
 function orderWhatsApp() {
   if (!cart.length) { alert('Кошик порожній'); return; }
   const message = buildOrderMessage();
-  const url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message);
-  window.open(url, '_blank');
+  window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message), '_blank');
 }
 
 function mlPicker(selected, custom) {
@@ -320,9 +325,7 @@ async function loadProducts() {
     const localCatalog = localStorage.getItem('olfera_catalog_v1');
     if (localCatalog) {
       const parsed = JSON.parse(localCatalog);
-      if (parsed && parsed.products && parsed.products.length) {
-        allProducts = parsed.products;
-      }
+      if (parsed && parsed.products && parsed.products.length) allProducts = parsed.products;
     }
   } catch (e) {}
   if (!allProducts.length) {
@@ -349,10 +352,6 @@ if (orderWa) orderWa.addEventListener('click', orderWhatsApp);
 updateCartUI();
 loadProducts();
 fillOrderFields();
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
-}
 
 const REVIEWS_API = 'https://crudcrud.com/api/22b8f8822db0418a98f48e6cd75a7ec8/reviews';
 const REVIEWS_LS_KEY = 'olfera_reviews_v1';
@@ -403,13 +402,7 @@ function fillReviewProducts() {
   reviewProducts.innerHTML = allProducts.map(p => '<option value="' + escapeHtml(p.name) + '">').join('');
 }
 function mapReview(r) {
-  return {
-    name: escapeHtml(r.name || 'Гість'),
-    product: escapeHtml(r.product || ''),
-    text: escapeHtml(r.text || ''),
-    stars: r.stars || 5,
-    _id: r._id || r.id || ''
-  };
+  return { name: escapeHtml(r.name || 'Гість'), product: escapeHtml(r.product || ''), text: escapeHtml(r.text || ''), stars: r.stars || 5, _id: r._id || r.id || '' };
 }
 function loadReviews() {
   const local = loadLocalReviews();
@@ -419,7 +412,7 @@ function loadReviews() {
     if (!Array.isArray(data) || !data.length) return;
     publishedReviews = data.slice().reverse().map(mapReview);
     renderReviews();
-  }).catch(() => {});
+  }).catch(function(){});
 }
 loadReviews();
 
@@ -432,11 +425,11 @@ if (reviewForm) {
     const text = document.getElementById('review-text').value.trim();
     const stars = Number(reviewStars.dataset.value) || 5;
     if (!name || !text) {
-      if (status) status.textContent = 'Напишіть ім\'я і текст відгуку.';
+      if (status) status.textContent = "Напишіть ім'я і текст відгуку.";
       return;
     }
     if (status) status.textContent = 'Зберігаю відгук...';
-    const review = { id: 'r' + Date.now(), name: name.slice(0, 40), product: product.slice(0, 60), text: text.slice(0, 500), stars, date: new Date().toISOString() };
+    const review = { id: 'r' + Date.now(), name: name.slice(0, 40), product: product.slice(0, 60), text: text.slice(0, 500), stars: stars, date: new Date().toISOString() };
     const local = loadLocalReviews();
     local.push(review);
     saveLocalReviews(local);
@@ -446,11 +439,7 @@ if (reviewForm) {
     paintStars(5);
     if (status) status.textContent = 'Дякуємо! Відгук уже на сайті.';
     try {
-      await fetch(REVIEWS_API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(review)
-      });
+      await fetch(REVIEWS_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(review) });
     } catch (err) {}
   });
 }
