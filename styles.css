@@ -56,7 +56,8 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 .logo { font-family: "Cormorant Garamond", serif; font-size: 1.55rem; letter-spacing: .16em; color: var(--gold-dark); flex-shrink: 0; }
 .nav { display: flex; gap: 22px; }
 .nav a { font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-.nav a:hover { color: var(--gold-dark); }
+.nav a:hover, .nav a.active { color: var(--gold-dark); }
+.nav a.active { font-weight: 600; }
 .header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .cart-btn { position: relative; background: none; border: none; color: var(--gold-dark); cursor: pointer; }
 .cart-count {
@@ -79,6 +80,10 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
   display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center;
 }
 .hero-actions .btn { min-width: 180px; text-align: center; }
+.page-top { padding-top: 100px; }
+.home-preview { text-align: center; background: #fffdf8; }
+.home-cta { text-align: center; margin-top: 8px; }
+.footer-links { margin-top: 12px; font-size: .9rem; }
 
 .order-guide {
   background: linear-gradient(180deg, #fffdf8 0%, #f7f3ec 100%);
@@ -220,7 +225,7 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 .about-grid, .payment-grid, .delivery-grid, .contacts-grid {
   display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
-.about-text .section-title { text-align: left; }
+.about-text .section-title { text-align: center; }
 .about-text p, .payment-card p, .delivery-card p { color: var(--muted); }
 .about-list { list-style: none; margin-top: 16px; }
 .about-list li { padding: 6px 0; color: var(--muted); }
@@ -313,8 +318,6 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
   background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #b44545;
   line-height: 1; padding: 4px 8px; flex-shrink: 0;
 }
-.cart-footer .btn { list-style: none; }
-.cart-footer button::marker { content: none; }
 .cart-empty { color: var(--muted); text-align: center; padding: 40px 10px; }
 .cart-footer { padding: 16px 20px calc(28px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); position: sticky; bottom: 0; background: #fffdf8; }
 .cart-total { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 600; }
