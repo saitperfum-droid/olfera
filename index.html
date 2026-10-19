@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=38">
+<link rel="stylesheet" href="styles.css?v=39">
 </head>
 <body>
 <header class="header"><div class="container header-inner"><a href="#" class="logo">OLFÉRA</a><nav class="nav"><a href="#how-to-order">Як замовити</a><a href="#catalog">Каталог</a><a href="#shop">Магазин</a><a href="#about">Про нас</a><a href="#payment">Оплата</a><a href="#delivery">Доставка</a><a href="#reviews">Відгуки</a><a href="#contacts">Контакти</a></nav><div class="header-actions"><button class="cart-btn" id="cart-btn" aria-label="Кошик"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg><span class="cart-count" id="cart-count">0</span></button><button class="menu-toggle" aria-label="Меню"><span></span><span></span><span></span></button></div></div></header>
@@ -24,8 +24,46 @@
 <button class="btn btn-gold cart-order-btn" id="cart-order-btn">Замовити в Telegram</button>
 <button class="btn btn-outline cart-order-btn" id="cart-ig-btn">Замовити в Instagram</button>
 <button class="btn btn-outline cart-order-btn" id="cart-wa-btn">Замовити в WhatsApp</button><p class="order-hint" id="order-hint"></p></div></aside>
-<section class="hero"><div class="container hero-content"><h1>OLFÉRA</h1><p class="hero-subtitle">парфум</p><p class="hero-desc">Преміум-парфумерія у Бердичеві.<br>Європейська 6/5 · щодня 10:00–19:00</p><a href="#catalog" class="btn btn-gold">Переглянути каталог</a></div></section>
-<section class="section order-guide" id="how-to-order"><div class="container"><h2 class="section-title">Як замовити</h2><ol class="guide-steps"><li>Оберіть аромат і кількість мілілітрів.</li><li>Натисніть «В кошик» і відкрийте кошик угорі.</li><li>Заповніть контакти і натисніть «Замовити» в Telegram / Instagram / WhatsApp.</li></ol></div></section>
+
+<section class="hero">
+  <div class="container hero-content">
+    <h1>OLFÉRA</h1>
+    <p class="hero-subtitle">парфум</p>
+    <p class="hero-desc">Преміум-парфумерія у Бердичеві.<br>Європейська 6/5 · щодня 10:00–19:00</p>
+    <div class="hero-actions">
+      <a href="#catalog" class="btn btn-gold">Переглянути каталог</a>
+      <a href="#how-to-order" class="btn btn-ghost">Як замовити</a>
+    </div>
+  </div>
+</section>
+
+<section class="section order-guide" id="how-to-order">
+  <div class="container">
+    <h2 class="section-title">Як замовити</h2>
+    <p class="section-subtitle">Три прості кроки — і аромат уже у вас</p>
+    <div class="guide-grid">
+      <article class="guide-card">
+        <div class="guide-num">01</div>
+        <h3>Оберіть аромат</h3>
+        <p>Знайдіть улюблені ноти в каталозі та вкажіть потрібну кількість мілілітрів.</p>
+      </article>
+      <article class="guide-card">
+        <div class="guide-num">02</div>
+        <h3>Додайте в кошик</h3>
+        <p>Натисніть «В кошик», відкрийте його вгорі справа та перевірте замовлення.</p>
+      </article>
+      <article class="guide-card">
+        <div class="guide-num">03</div>
+        <h3>Оформіть замовлення</h3>
+        <p>Залиште контакти та надішліть замовлення в Telegram, Instagram або WhatsApp.</p>
+      </article>
+    </div>
+    <div class="guide-cta">
+      <a href="#catalog" class="btn btn-gold btn-lg">Обрати аромат</a>
+    </div>
+  </div>
+</section>
+
 <section class="section catalog" id="catalog"><div class="container"><h2 class="section-title">Каталог</h2><div class="filter-bar"><input id="search-input" placeholder="Пошук..."><select id="brand-filter"><option value="">Усі бренди</option></select><select id="price-filter"><option value="">Будь-яка ціна</option><option value="0-100">до 100 ₴</option><option value="100-200">100–200 ₴</option><option value="200-500">200–500 ₴</option></select><div id="family-filters"></div><span id="filter-count"></span></div><div class="products-grid" id="products-container"></div><div class="catalog-pager" id="catalog-pager"></div></div></section>
 <section id="shop" class="section"><div class="container"><h2 class="section-title">Магазин</h2><div class="shop-grid"><figure><img src="shop-front.jpg" alt="Магазин OLFÉRA" loading="lazy"><figcaption>Аромати в магазині</figcaption></figure><figure><img src="shop-inside.jpg" alt="Бердичів, Європейська 6/5" loading="lazy"><figcaption>Бердичів, Європейська 6/5</figcaption></figure></div></div></section>
 <section id="about" class="section about"><div class="container about-grid"><div class="about-text"><h2 class="section-title">Про OLFÉRA</h2><p>OLFÉRA парфум — магазин преміум-парфумерії у Бердичеві, вул. Європейська 6/5.</p><ul class="about-list"><li>Оригінальна продукція</li><li>Консультація з підбору аромату</li><li>Наливна парфумерія від 1 мл</li></ul></div></div></section>
@@ -34,6 +72,6 @@
 <section id="reviews" class="section reviews"><div class="container"><h2 class="section-title">Відгуки</h2><p class="section-subtitle">Поділіться враженням про аромат</p><div class="reviews-list" id="reviews-list"></div><form class="review-form" id="review-form"><h3>Написати відгук</h3><input id="review-name" placeholder="Ваше ім'я" required autocomplete="name"><input id="review-product" placeholder="Який аромат" list="review-products"><datalist id="review-products"></datalist><div class="stars" id="review-stars" data-value="5"><button type="button" data-star="1">★</button><button type="button" data-star="2">★</button><button type="button" data-star="3">★</button><button type="button" data-star="4">★</button><button type="button" data-star="5">★</button></div><textarea id="review-text" placeholder="Ваш відгук" required maxlength="500"></textarea><button class="btn btn-gold" type="submit">Надіслати відгук</button><p class="review-note">Відгук одразу з'явиться на сайті.</p><p class="review-status" id="review-status"></p></form></div></section>
 <section id="contacts" class="section contacts"><div class="container"><h2 class="section-title">Контакти</h2><div class="contacts-grid"><div class="contact-card"><h3>Адреса</h3><p>Бердичів, Європейська 6/5</p></div><div class="contact-card"><h3>Графік</h3><p>Щодня, 10:00–19:00</p></div><div class="contact-card"><h3>Телефон</h3><p><a href="tel:+380962566574">+380 96 256 65 74</a></p></div><div class="contact-card"><h3>Telegram</h3><p><a href="https://t.me/Shneerzon">@Shneerzon</a></p></div><div class="contact-card"><h3>Instagram</h3><p><a href="https://instagram.com/olfer_aperfume" target="_blank" rel="noopener">@olfer_aperfume</a></p></div></div></div></section>
 <footer class="footer"><div class="container"><div class="footer-logo">OLFÉRA</div><p>Бердичів, Європейська 6/5</p><p>Щодня 10:00–19:00</p><p><a href="tel:+380962566574">+380 96 256 65 74</a></p><p><a href="privacy.html">Політика конфіденційності</a> · <a href="admin.html">Адміністратор</a></p></div></footer>
-<script src="script.js?v=38"></script>
+<script src="script.js?v=39"></script>
 </body>
 </html>

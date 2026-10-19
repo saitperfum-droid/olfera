@@ -26,10 +26,22 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 .btn {
   display: inline-block; padding: 12px 26px; border: none; cursor: pointer;
   font-family: Montserrat, sans-serif; letter-spacing: .08em; text-transform: uppercase; font-size: .82rem;
+  border-radius: 999px; transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
-.btn-gold { background: linear-gradient(135deg, #d7bf78, var(--gold)); color: #1c1a17; }
-.btn-outline { background: transparent; color: var(--gold-dark); border: 1px solid var(--gold); width: 100%; margin-top: 10px; }
+.btn:hover { transform: translateY(-1px); }
+.btn-gold {
+  background: linear-gradient(135deg, #d7bf78, var(--gold)); color: #1c1a17;
+  box-shadow: 0 8px 20px rgba(154, 123, 47, .25);
+}
+.btn-gold:hover { box-shadow: 0 12px 28px rgba(154, 123, 47, .35); }
+.btn-ghost {
+  background: transparent; color: var(--gold-dark);
+  border: 1.5px solid var(--gold);
+}
+.btn-ghost:hover { background: rgba(154, 123, 47, .08); }
+.btn-outline { background: transparent; color: var(--gold-dark); border: 1px solid var(--gold); width: 100%; margin-top: 10px; border-radius: 999px; }
 .btn-outline:disabled { opacity: .45; cursor: not-allowed; }
+.btn-lg { padding: 14px 32px; font-size: .88rem; }
 .header {
   position: fixed; inset: 0 0 auto 0; z-index: 20;
   background: rgba(247, 243, 236, .92); backdrop-filter: blur(10px);
@@ -58,6 +70,65 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 .hero h1 { font-size: clamp(3.2rem, 10vw, 6rem); color: var(--gold-dark); letter-spacing: .14em; }
 .hero-subtitle { letter-spacing: .42em; color: var(--gold); margin: 6px 0 18px; font-family: "Cormorant Garamond", serif; font-size: 1.4rem; }
 .hero-desc { color: var(--muted); margin-bottom: 28px; }
+.hero-actions {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center;
+}
+.hero-actions .btn { min-width: 180px; text-align: center; }
+
+/* How to order — premium steps */
+.order-guide {
+  background: linear-gradient(180deg, #fffdf8 0%, #f7f3ec 100%);
+}
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.guide-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 28px 22px 30px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(80, 60, 20, .06);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.guide-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(80, 60, 20, .1);
+}
+.guide-num {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: .08em;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.guide-card h3 {
+  font-size: 1.35rem;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.guide-card p {
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.65;
+  max-width: 260px;
+  margin: 0 auto;
+}
+.guide-cta {
+  text-align: center;
+  margin-top: 36px;
+}
+@media (max-width: 800px) {
+  .guide-grid { grid-template-columns: 1fr; max-width: 400px; }
+  .guide-card { padding: 24px 20px; }
+}
+
 .catalog { background: #fffdf8; }
 .products-grid {
   display: grid;
@@ -95,6 +166,7 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
   .products-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .product-card .product-notes { display: none; }
   .product-card .tap-hint { display: none; }
+  .hero-actions .btn { min-width: 140px; width: 100%; max-width: 260px; }
 }
 @media (min-width: 901px) {
   .menu-toggle { display: none !important; }
