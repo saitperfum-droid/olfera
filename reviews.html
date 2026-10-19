@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Відгуки — OLFÉRA</title>
+<meta name="description" content="Відгуки покупців магазину OLFÉRA.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=50">
+</head>
+<body>
+<header class="header"><div class="container header-inner"><a href="index.html" class="logo">OLFÉRA</a>
+<nav class="nav">
+<a href="index.html">Головна</a>
+<a href="catalog.html">Каталог</a>
+<a href="shop.html">Магазин</a>
+<a href="about.html">Про нас</a>
+<a href="payment.html">Оплата</a>
+<a href="delivery.html">Доставка</a>
+<a href="reviews.html" class="active">Відгуки</a>
+<a href="contacts.html">Контакти</a>
+</nav>
+<div class="header-actions"><button class="cart-btn" id="cart-btn" aria-label="Кошик"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg><span class="cart-count" id="cart-count">0</span></button><button class="menu-toggle" aria-label="Меню"><span></span><span></span><span></span></button></div></div></header>
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-sidebar" id="cart-sidebar"><div class="cart-header"><h3>Кошик</h3><button class="cart-close" id="cart-close">&times;</button></div><div class="cart-items" id="cart-items"></div><div class="cart-footer"><div class="cart-total"><span>Разом:</span><strong id="cart-total-price">0 ₴</strong></div>
+<div class="order-fields">
+<input id="order-name" placeholder="Ім'я" autocomplete="name">
+<input id="order-phone" placeholder="Телефон, напр. 096..." inputmode="tel" autocomplete="tel">
+<select id="order-delivery"><option value="Самовивіз, Європейська 6/5">Самовивіз, Європейська 6/5</option><option value="Нова Пошта">Нова Пошта</option></select>
+<input id="order-np" placeholder="Місто і відділення Нової Пошти" autocomplete="off">
+</div>
+<button class="btn btn-gold cart-order-btn" id="cart-order-btn">Замовити в Telegram</button>
+<button class="btn btn-outline cart-order-btn" id="cart-ig-btn">Замовити в Instagram</button>
+<button class="btn btn-outline cart-order-btn" id="cart-wa-btn">Замовити в WhatsApp</button><p class="order-hint" id="order-hint"></p></div></aside>
+
+<section id="reviews" class="section reviews page-top">
+  <div class="container">
+    <h1 class="section-title">Відгуки</h1>
+    <p class="section-subtitle">Поділіться враженням про аромат</p>
+    <div class="reviews-list" id="reviews-list"></div>
+    <form class="review-form" id="review-form">
+      <h3>Написати відгук</h3>
+      <input id="review-name" placeholder="Ваше ім'я" required autocomplete="name">
+      <input id="review-product" placeholder="Який аромат" list="review-products">
+      <datalist id="review-products"></datalist>
+      <div class="stars" id="review-stars" data-value="5">
+        <button type="button" data-star="1">★</button>
+        <button type="button" data-star="2">★</button>
+        <button type="button" data-star="3">★</button>
+        <button type="button" data-star="4">★</button>
+        <button type="button" data-star="5">★</button>
+      </div>
+      <textarea id="review-text" placeholder="Ваш відгук" required maxlength="500"></textarea>
+      <button class="btn btn-gold" type="submit">Надіслати відгук</button>
+      <p class="review-note">Відгук одразу з'явиться на сайті.</p>
+      <p class="review-status" id="review-status"></p>
+    </form>
+  </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-logo">OLFÉRA</div>
+<p>Бердичів, Європейська 6/5</p>
+<p>Щодня 10:00–19:00</p>
+<p><a href="tel:+380962566574">+380 96 256 65 74</a></p>
+<p class="footer-links">
+<a href="catalog.html">Каталог</a> ·
+<a href="delivery.html">Доставка</a> ·
+<a href="contacts.html">Контакти</a> ·
+<a href="privacy.html">Політика конфіденційності</a>
+</p>
+</div></footer>
+<script src="script.js?v=50"></script>
+</body>
+</html>

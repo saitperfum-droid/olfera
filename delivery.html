@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Доставка — OLFÉRA</title>
+<meta name="description" content="Доставка Новою Поштою та самовивіз у Бердичеві.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=50">
+</head>
+<body>
+<header class="header"><div class="container header-inner"><a href="index.html" class="logo">OLFÉRA</a>
+<nav class="nav">
+<a href="index.html">Головна</a>
+<a href="catalog.html">Каталог</a>
+<a href="shop.html">Магазин</a>
+<a href="about.html">Про нас</a>
+<a href="payment.html">Оплата</a>
+<a href="delivery.html" class="active">Доставка</a>
+<a href="reviews.html">Відгуки</a>
+<a href="contacts.html">Контакти</a>
+</nav>
+<div class="header-actions"><button class="cart-btn" id="cart-btn" aria-label="Кошик"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg><span class="cart-count" id="cart-count">0</span></button><button class="menu-toggle" aria-label="Меню"><span></span><span></span><span></span></button></div></div></header>
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-sidebar" id="cart-sidebar"><div class="cart-header"><h3>Кошик</h3><button class="cart-close" id="cart-close">&times;</button></div><div class="cart-items" id="cart-items"></div><div class="cart-footer"><div class="cart-total"><span>Разом:</span><strong id="cart-total-price">0 ₴</strong></div>
+<div class="order-fields">
+<input id="order-name" placeholder="Ім'я" autocomplete="name">
+<input id="order-phone" placeholder="Телефон, напр. 096..." inputmode="tel" autocomplete="tel">
+<select id="order-delivery"><option value="Самовивіз, Європейська 6/5">Самовивіз, Європейська 6/5</option><option value="Нова Пошта">Нова Пошта</option></select>
+<input id="order-np" placeholder="Місто і відділення Нової Пошти" autocomplete="off">
+</div>
+<button class="btn btn-gold cart-order-btn" id="cart-order-btn">Замовити в Telegram</button>
+<button class="btn btn-outline cart-order-btn" id="cart-ig-btn">Замовити в Instagram</button>
+<button class="btn btn-outline cart-order-btn" id="cart-wa-btn">Замовити в WhatsApp</button><p class="order-hint" id="order-hint"></p></div></aside>
+
+<section id="delivery" class="section delivery page-top">
+  <div class="container">
+    <h1 class="section-title">Доставка</h1>
+    <div class="delivery-grid">
+      <div class="delivery-card"><h3>Нова Пошта</h3><p>1–3 дні по всій Україні.</p></div>
+      <div class="delivery-card"><h3>Самовивіз</h3><p>Бердичів, Європейська 6/5. Щодня 10:00–19:00.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-logo">OLFÉRA</div>
+<p>Бердичів, Європейська 6/5</p>
+<p>Щодня 10:00–19:00</p>
+<p><a href="tel:+380962566574">+380 96 256 65 74</a></p>
+<p class="footer-links">
+<a href="catalog.html">Каталог</a> ·
+<a href="delivery.html">Доставка</a> ·
+<a href="contacts.html">Контакти</a> ·
+<a href="privacy.html">Політика конфіденційності</a>
+</p>
+</div></footer>
+<script src="script.js?v=50"></script>
+</body>
+</html>
