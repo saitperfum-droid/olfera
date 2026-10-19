@@ -80,7 +80,6 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 }
 .hero-actions .btn { min-width: 180px; text-align: center; }
 
-/* How to order — accordion */
 .order-guide {
   background: linear-gradient(180deg, #fffdf8 0%, #f7f3ec 100%);
   padding: 0 0 8px;
@@ -301,11 +300,21 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 .cart-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); }
 .cart-header h3 { font-family: "Cormorant Garamond", serif; font-size: 1.4rem; color: var(--gold-dark); }
 .cart-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--muted); line-height: 1; }
-.cart-items { flex: 1; overflow: auto; padding: 12px 20px; }
-.cart-item { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-.cart-item h4 { font-size: 1rem; margin: 0 0 4px; }
-.cart-item-price { color: var(--gold-dark); font-size: .85rem; }
-.cart-item-remove { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #b44545; }
+.cart-items { flex: 1; overflow: auto; padding: 12px 20px 24px; -webkit-overflow-scrolling: touch; }
+.cart-item {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--line);
+}
+.cart-item-info { flex: 1; min-width: 0; }
+.cart-item h4 { font-size: 1rem; margin: 0 0 4px; color: var(--ink); font-family: Montserrat, sans-serif; font-weight: 600; }
+.cart-item-brand { color: var(--muted); font-size: .85rem; margin: 0 0 4px; }
+.cart-item-price { color: var(--gold-dark); font-size: .85rem; margin: 0; }
+.cart-item-remove {
+  background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #b44545;
+  line-height: 1; padding: 4px 8px; flex-shrink: 0;
+}
+.cart-footer .btn { list-style: none; }
+.cart-footer button::marker { content: none; }
 .cart-empty { color: var(--muted); text-align: center; padding: 40px 10px; }
 .cart-footer { padding: 16px 20px calc(28px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); position: sticky; bottom: 0; background: #fffdf8; }
 .cart-total { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 600; }
