@@ -2,7 +2,16 @@ const TELEGRAM_USERNAME = 'Shneerzon';
 const INSTAGRAM_USERNAME = 'olfer_aperfume';
 const WHATSAPP_NUMBER = '380962566574';
 const ML_OPTIONS = [1, 2, 3, 5, 10];
-let cart = JSON.parse(localStorage.getItem('olfera_cart')) || [];
+let cart = [];
+try {
+  cart = JSON.parse(localStorage.getItem('olfera_cart') || '[]') || [];
+  if (!Array.isArray(cart)) cart = [];
+  cart = cart.filter(i => i && i.name).map(i => Object.assign({}, i, {
+    price: Number(i.price) || 0,
+    ml: Number(i.ml) || 1,
+    qty: Number(i.qty) || 1
+  }));
+} catch (e) { cart = []; }
 
 const style = document.createElement('style');
 style.textContent = '.ml-row{display:flex;gap:6px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap}.ml-btn{border:1px solid #c9a84c;background:#fff;color:#7a6124;border-radius:999px;padding:4px 10px;font-size:.75rem;cursor:pointer}.ml-btn.active{background:#9a7b2f;color:#fff}.ml-custom{width:88px;border:1px solid #c9a84c;border-radius:999px;padding:4px 8px;text-align:center;font-size:16px}.line-total{font-size:.85rem;color:#7a6124;margin-top:4px}';
@@ -35,10 +44,17 @@ if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
   });
 })();
 
+function cartLineTotal(item) {
+  const price = Number(item.price) || 0;
+  const ml = Number(item.ml) || 1;
+  const qty = Number(item.qty) || 1;
+  return price * ml * qty;
+}
 function updateCartUI() {
   const count = document.querySelector('.cart-count');
-  const total = cart.reduce((s, i) => s + i.price * (i.ml || 1) * i.qty, 0);
-  if (count) { count.textContent = cart.reduce((s, i) => s + i.qty, 0); count.dataset.count = String(cart.reduce((s, i) => s + i.qty, 0)); }
+  const total = cart.reduce((s, i) => s + cartLineTotal(i), 0);
+  const countNum = cart.reduce((s, i) => s + (Number(i.qty) || 1), 0);
+  if (count) { count.textContent = countNum; count.dataset.count = String(countNum); }
   const totalEl = document.getElementById('cart-total-price');
   if (totalEl) totalEl.textContent = total.toLocaleString('uk-UA') + ' ₴';
   const cartItemsContainer = document.getElementById('cart-items');
@@ -47,11 +63,32 @@ function updateCartUI() {
     cartItemsContainer.innerHTML = '<p class="cart-empty">Кошик порожній</p>';
     return;
   }
-  cartItemsContainer.innerHTML = cart.map(item => {
-    const ml = item.ml || 1;
-    const line = item.price * ml * item.qty;
-    return '<div class="cart-item"><div><h4>' + item.name + '</h4><p>' + (item.brand || '') + '</p><p class="cart-item-price">' + ml + ' мл × ' + item.price + ' ₴ = ' + line.toLocaleString('uk-UA') + ' ₴</p></div><button class="cart-item-remove" onclick="removeFromCart(' + item.id + ', ' + ml + ')">&times;</button></div>';
+  cartItemsContainer.innerHTML = cart.map((item, idx) => {
+    const ml = Number(item.ml) || 1;
+    const qty = Number(item.qty) || 1;
+    const price = Number(item.price) || 0;
+    const line = price * ml * qty;
+    const qtyLabel = qty > 1 ? ' × ' + qty : '';
+    const name = String(item.name || 'Аромат').replace(/</g, '<');
+    const brand = String(item.brand || '').replace(/</g, '<');
+    return '<div class="cart-item" data-idx="' + idx + '">' +
+      '<div class="cart-item-info">' +
+        '<h4>' + name + '</h4>' +
+        (brand ? '<p class="cart-item-brand">' + brand + '</p>' : '') +
+        '<p class="cart-item-price">' + ml + ' мл × ' + price + ' ₴' + qtyLabel + ' = ' + line.toLocaleString('uk-UA') + ' ₴</p>' +
+      '</div>' +
+      '<button type="button" class="cart-item-remove" data-idx="' + idx + '" aria-label="Видалити">&times;</button>' +
+    '</div>';
   }).join('');
+  cartItemsContainer.querySelectorAll('.cart-item-remove').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const idx = Number(this.getAttribute('data-idx'));
+      if (!isNaN(idx) && idx >= 0 && idx < cart.length) {
+        cart.splice(idx, 1);
+        saveCart();
+      }
+    });
+  });
 }
 function saveCart() { localStorage.setItem('olfera_cart', JSON.stringify(cart)); updateCartUI(); }
 function addToCart(product) {
@@ -97,11 +134,12 @@ function buildOrderMessage() {
   if (np) message += 'НП: ' + np + '\n';
   message += '\n';
   cart.forEach(item => {
-    const ml = item.ml || 1;
-    const line = item.price * ml * item.qty;
-    message += '• ' + item.name + ' (' + (item.brand || '') + ') — ' + ml + ' мл × ' + item.price + ' ₴ = ' + line + ' ₴\n';
+    const ml = Number(item.ml) || 1;
+    const price = Number(item.price) || 0;
+    const line = cartLineTotal(item);
+    message += '• ' + item.name + ' (' + (item.brand || '') + ') — ' + ml + ' мл × ' + price + ' ₴ = ' + line + ' ₴\n';
   });
-  const total = cart.reduce((s, i) => s + i.price * (i.ml || 1) * i.qty, 0);
+  const total = cart.reduce((s, i) => s + cartLineTotal(i), 0);
   message += '\nРазом: ' + total + ' ₴';
   return message;
 }
@@ -368,7 +406,7 @@ const reviewProducts = document.getElementById('review-products');
 let publishedReviews = [];
 
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  return String(s).replace(/[&<>"']/g, ch => ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[ch]));
 }
 function starsText(n) {
   const v = Math.max(1, Math.min(5, Number(n) || 5));
@@ -382,12 +420,32 @@ function paintStars(value) {
   });
 }
 if (reviewStars) {
-  paintStars(5);
-  reviewStars.addEventListener('click', e => {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    paintStars(Number(btn.dataset.star));
+  reviewStars.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => paintStars(Number(btn.dataset.star)));
   });
+  paintStars(5);
+}
+function fillReviewProducts() {
+  if (!reviewProducts) return;
+  reviewProducts.innerHTML = allProducts.map(p => '<option value="' + escapeHtml(p.name) + '">').join('');
+}
+async function loadReviews() {
+  publishedReviews = loadLocalReviews();
+  try {
+    const remote = await (await fetch(REVIEWS_API + '?ts=' + Date.now())).json();
+    if (Array.isArray(remote) && remote.length) {
+      publishedReviews = remote.map(r => ({
+        id: r._id || r.id,
+        name: r.name,
+        product: r.product,
+        text: r.text,
+        stars: r.stars,
+        date: r.date
+      }));
+      saveLocalReviews(publishedReviews);
+    }
+  } catch (e) {}
+  renderReviews();
 }
 function renderReviews() {
   if (!reviewsList) return;
@@ -395,51 +453,31 @@ function renderReviews() {
     reviewsList.innerHTML = '<p class="review-empty">Поки що немає відгуків. Напишіть перший.</p>';
     return;
   }
-  reviewsList.innerHTML = publishedReviews.map(r => '<article class="review-card"><div class="review-top"><strong class="review-name">' + r.name + '</strong><span class="review-stars">' + starsText(r.stars) + '</span></div>' + (r.product ? '<p class="review-product">' + r.product + '</p>' : '') + '<p class="review-text">' + r.text + '</p></article>').join('');
+  reviewsList.innerHTML = publishedReviews.map(r => '<article class="review-card"><div class="review-top"><strong class="review-name">' + escapeHtml(r.name) + '</strong><span class="review-stars">' + starsText(r.stars) + '</span></div>' + (r.product ? '<p class="review-product">' + escapeHtml(r.product) + '</p>' : '') + '<p class="review-text">' + escapeHtml(r.text) + '</p></article>').join('');
 }
-function fillReviewProducts() {
-  if (!reviewProducts || !Array.isArray(allProducts)) return;
-  reviewProducts.innerHTML = allProducts.map(p => '<option value="' + escapeHtml(p.name) + '">').join('');
-}
-function mapReview(r) {
-  return { name: escapeHtml(r.name || 'Гість'), product: escapeHtml(r.product || ''), text: escapeHtml(r.text || ''), stars: r.stars || 5, _id: r._id || r.id || '' };
-}
-function loadReviews() {
-  const local = loadLocalReviews();
-  publishedReviews = local.slice().reverse().map(mapReview);
-  renderReviews();
-  fetch(REVIEWS_API + '?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject()).then(data => {
-    if (!Array.isArray(data) || !data.length) return;
-    publishedReviews = data.slice().reverse().map(mapReview);
-    renderReviews();
-  }).catch(function(){});
-}
-loadReviews();
-
 if (reviewForm) {
-  reviewForm.addEventListener('submit', async e => {
+  reviewForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const name = (document.getElementById('review-name') || {}).value.trim();
+    const product = (document.getElementById('review-product') || {}).value.trim();
+    const text = (document.getElementById('review-text') || {}).value.trim();
+    const stars = Number((reviewStars || {}).dataset.value || 5);
     const status = document.getElementById('review-status');
-    const name = document.getElementById('review-name').value.trim();
-    const product = document.getElementById('review-product').value.trim();
-    const text = document.getElementById('review-text').value.trim();
-    const stars = Number(reviewStars.dataset.value) || 5;
-    if (!name || !text) {
-      if (status) status.textContent = "Напишіть ім'я і текст відгуку.";
-      return;
-    }
-    if (status) status.textContent = 'Зберігаю відгук...';
-    const review = { id: 'r' + Date.now(), name: name.slice(0, 40), product: product.slice(0, 60), text: text.slice(0, 500), stars: stars, date: new Date().toISOString() };
-    const local = loadLocalReviews();
-    local.push(review);
-    saveLocalReviews(local);
-    publishedReviews.unshift(mapReview(review));
+    if (!name || !text) return;
+    const review = { id: 'r' + Date.now(), name, product, text, stars, date: new Date().toISOString() };
+    publishedReviews.unshift(review);
+    saveLocalReviews(publishedReviews);
     renderReviews();
+    if (status) status.textContent = 'Дякуємо! Відгук додано.';
     reviewForm.reset();
     paintStars(5);
-    if (status) status.textContent = 'Дякуємо! Відгук уже на сайті.';
     try {
-      await fetch(REVIEWS_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(review) });
+      await fetch(REVIEWS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(review)
+      });
     } catch (err) {}
   });
 }
+loadReviews();
