@@ -33,7 +33,6 @@ if (cartBtn) cartBtn.addEventListener('click', openCart);
 if (cartClose) cartClose.addEventListener('click', closeCart);
 if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
 
-/* Mobile menu */
 (function(){
   const toggle = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.nav');
@@ -147,8 +146,7 @@ function buildOrderMessage() {
 function orderTelegram() {
   if (!cart.length) { alert('Кошик порожній'); return; }
   const message = buildOrderMessage();
-  const url = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encodeURIComponent(message);
-  window.open(url, '_blank');
+  window.open('https://t.me/' + TELEGRAM_USERNAME + '?text=' + encodeURIComponent(message), '_blank');
 }
 function orderInstagram() {
   if (!cart.length) { alert('Кошик порожній'); return; }
@@ -290,6 +288,7 @@ function renderProducts(resetPage) {
   if (resetPage) catalogPage = 1;
   const container = document.getElementById('products-container');
   const pager = document.getElementById('catalog-pager');
+  if (!container) return;
   const query = (document.getElementById('search-input') || {}).value || '';
   const q = query.trim().toLowerCase();
   const brand = (document.getElementById('brand-filter') || {}).value || '';
@@ -306,7 +305,6 @@ function renderProducts(resetPage) {
     }
     return true;
   });
-  if (!container) return;
   container.innerHTML = '';
   const count = document.getElementById('filter-count');
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -373,8 +371,22 @@ async function loadProducts() {
     } catch (e) {}
   }
   if (!allProducts.length) {
-    allProducts = await (await fetch('products.json?v=16')).json();
+    try {
+      allProducts = await (await fetch('products.json?v=51')).json();
+      if (!Array.isArray(allProducts) || allProducts.length < 10) throw new Error('bad catalog');
+    } catch (e) {
+      try {
+        allProducts = await (await fetch('https://cdn.jsdelivr.net/gh/saitperfum-droid/olfera@b07b994113bb326b5c030522d9ff5edbd3fe30b7/products.json')).json();
+      } catch (e2) { allProducts = []; }
+    }
   }
+  try {
+    const extra = await (await fetch('products-extra.json?v=51')).json();
+    if (Array.isArray(extra) && extra.length) {
+      const ids = new Set(allProducts.map(p => p.id));
+      extra.forEach(p => { if (p && p.id != null && !ids.has(p.id)) { allProducts.push(p); ids.add(p.id); } });
+    }
+  } catch (e) {}
   fillReviewProducts();
   setupFilters();
   renderProducts(true);
