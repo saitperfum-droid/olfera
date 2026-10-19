@@ -39,6 +39,11 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
   border: 1.5px solid var(--gold);
 }
 .btn-ghost:hover { background: rgba(154, 123, 47, .08); }
+.btn-ghost.is-open {
+  background: var(--gold);
+  color: #fff;
+  border-color: var(--gold);
+}
 .btn-outline { background: transparent; color: var(--gold-dark); border: 1px solid var(--gold); width: 100%; margin-top: 10px; border-radius: 999px; }
 .btn-outline:disabled { opacity: .45; cursor: not-allowed; }
 .btn-lg { padding: 14px 32px; font-size: .88rem; }
@@ -75,9 +80,27 @@ h1, h2, h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; }
 }
 .hero-actions .btn { min-width: 180px; text-align: center; }
 
-/* How to order — premium steps */
+/* How to order — accordion */
 .order-guide {
   background: linear-gradient(180deg, #fffdf8 0%, #f7f3ec 100%);
+  padding: 0 0 8px;
+}
+.guide-panel {
+  padding: 12px 0 48px;
+  animation: guideIn .35s ease;
+}
+.guide-panel[hidden] {
+  display: none !important;
+}
+@keyframes guideIn {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.guide-lead {
+  text-align: center;
+  color: var(--muted);
+  margin-bottom: 28px;
+  font-size: 1rem;
 }
 .guide-grid {
   display: grid;
