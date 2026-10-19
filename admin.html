@@ -1,1 +1,214 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Адміністратор — OLFÉRA</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Montserrat,sans-serif;background:#f7f3ec;color:#1c1a17}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 80px}
+h1{font-weight:500;font-size:1.5rem}
+.card{background:#fff;border:1px solid rgba(154,123,47,.22);border-radius:14px;padding:16px;margin:12px 0}
+label{display:block;font-size:.78rem;color:#6f675d;margin:8px 0 4px}
+input,textarea{width:100%;box-sizing:border-box;border:1px solid #e2d7c4;border-radius:8px;padding:10px;font:inherit}
+button{border:0;border-radius:8px;padding:10px 14px;background:#9a7b2f;color:#fff;font:inherit;cursor:pointer}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap}
+.ghost{background:#fff;color:#7a6124;border:1px solid #c9a84c}
+.danger{background:#b44545}
+.note{color:#6f675d;font-size:.85rem}
+.tabs{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
+.tabs button{background:#fff;color:#7a6124;border:1px solid #c9a84c}
+.tabs button.active{background:#9a7b2f;color:#fff}
+.status{min-height:1.2em;color:#7a6124}
+.stars{color:#9a7b2f}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OLFÉRA — адміністратор</h1>
+  <p class="note">Пароль: 256574</p>
+  <div id="login" class="card">
+    <label>Пароль</label>
+    <input id="pin" type="password" inputmode="numeric">
+    <button id="enter" style="margin-top:10px">Увійти</button>
+  </div>
+  <div id="panel" hidden>
+    <div class="tabs">
+      <button id="tab-products" class="active">Аромати</button>
+      <button id="tab-reviews">Відгуки</button>
+    </div>
+    <p class="status" id="status"></p>
+    <div id="products-view">
+      <div class="row">
+        <button id="add">Додати аромат</button>
+        <button id="save">Зберегти каталог</button>
+        <button id="export" class="ghost">Завантажити products.json</button>
+      </div>
+      <p class="note">Після «Зберегти» зміни видно на сайті в цьому браузері. Для всіх відвідувачів — завантаж products.json і залий у GitHub або надішли мені.</p>
+      <div id="list"></div>
+    </div>
+    <div id="reviews-view" hidden>
+      <div id="reviews"></div>
+    </div>
+  </div>
+</div>
+<script>
+const PIN = '256574';
+const API = 'https://crudcrud.com/api/22b8f8822db0418a98f48e6cd75a7ec8';
+const CATALOG_ID = '6acaaa83cbfaea03e8fda0a5';
+const LS_CATALOG = 'olfera_catalog_v1';
+const LS_REVIEWS = 'olfera_reviews_v1';
+let products = [];
+const statusEl = document.getElementById('status');
+function setStatus(t){ statusEl.textContent = t || ''; }
+function esc(v){ return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+document.getElementById('enter').onclick = () => {
+  if (document.getElementById('pin').value === PIN) {
+    document.getElementById('login').hidden = true;
+    document.getElementById('panel').hidden = false;
+    loadCatalog();
+  } else setStatus('Невірний пароль');
+};
+document.getElementById('pin').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('enter').click(); });
+
+async function loadCatalog() {
+  setStatus('Завантажую каталог...');
+  try {
+    const local = localStorage.getItem(LS_CATALOG);
+    if (local) {
+      const parsed = JSON.parse(local);
+      if (parsed && parsed.products && parsed.products.length) {
+        products = parsed.products;
+        render();
+        setStatus('Каталог з цього браузера (' + products.length + ').');
+        return;
+      }
+    }
+  } catch (e) {}
+  try {
+    const live = await (await fetch(API + '/catalogstate/' + CATALOG_ID + '?t=' + Date.now())).json();
+    if (live && live.products && live.products.length) {
+      products = live.products;
+      render();
+      setStatus('Каталог з API (' + products.length + ').');
+      return;
+    }
+  } catch (e) {}
+  try {
+    products = await (await fetch('products.json?v=16')).json();
+    render();
+    setStatus('Каталог з products.json (' + products.length + ').');
+  } catch (e) {
+    products = [];
+    render();
+    setStatus('Не вдалося завантажити каталог.');
+  }
+}
+
+function render() {
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  products.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="row"><strong>#' + (i + 1) + ' ' + esc(p.name || 'Без назви') + '</strong><button class="danger del">Видалити</button></div>' +
+      '<label>Назва</label><input data-k="name" value="' + esc(p.name) + '">' +
+      '<label>Бренд</label><input data-k="brand" value="' + esc(p.brand) + '">' +
+      '<label>Ноти</label><input data-k="notes" value="' + esc(p.notes) + '">' +
+      '<label>Опис</label><textarea data-k="description" rows="3">' + esc(p.description) + '</textarea>' +
+      '<label>Ціна за 1 мл</label><input data-k="price" value="' + esc(p.price) + '">' +
+      '<label>Файл фото (наприклад black-afgano.jpg)</label><input data-k="image" value="' + esc(p.image) + '">';
+    card.querySelector('.del').onclick = () => {
+      if (!confirm('Видалити «' + (p.name || 'аромат') + '»?')) return;
+      products.splice(i, 1);
+      render();
+      setStatus('Аромат прибрано. Натисни «Зберегти каталог».');
+    };
+    card.querySelectorAll('input,textarea').forEach(el => el.oninput = () => { p[el.dataset.k] = el.value; });
+    list.appendChild(card);
+  });
+}
+
+document.getElementById('add').onclick = () => {
+  products.unshift({ id: Date.now(), name: '', brand: '', notes: '', description: '', price: '100', unit: '1 мл', available: true, image: '' });
+  render();
+};
+document.getElementById('save').onclick = async () => {
+  setStatus('Зберігаю...');
+  localStorage.setItem(LS_CATALOG, JSON.stringify({ products }));
+  try {
+    const res = await fetch(API + '/catalogstate/' + CATALOG_ID, {
+      method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ products })
+    });
+    setStatus(res.ok ? 'Каталог збережено (API + браузер).' : 'Збережено в браузері. API недоступний — завантаж products.json.');
+  } catch (e) {
+    setStatus('Збережено в браузері. API недоступний — натисни «Завантажити products.json».');
+  }
+};
+document.getElementById('export').onclick = () => {
+  const blob = new Blob([JSON.stringify(products, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'products.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  setStatus('Файл products.json завантажено.');
+};
+
+document.getElementById('tab-products').onclick = () => show('products');
+document.getElementById('tab-reviews').onclick = () => { show('reviews'); loadReviews(); };
+function show(name) {
+  document.getElementById('products-view').hidden = name !== 'products';
+  document.getElementById('reviews-view').hidden = name !== 'reviews';
+  document.getElementById('tab-products').classList.toggle('active', name === 'products');
+  document.getElementById('tab-reviews').classList.toggle('active', name === 'reviews');
+}
+
+function loadLocalReviews() {
+  try { return JSON.parse(localStorage.getItem(LS_REVIEWS) || '[]'); } catch (e) { return []; }
+}
+function saveLocalReviews(list) {
+  localStorage.setItem(LS_REVIEWS, JSON.stringify(list));
+}
+
+async function loadReviews() {
+  const box = document.getElementById('reviews');
+  box.innerHTML = '<p class="note">Завантажую...</p>';
+  let reviews = loadLocalReviews();
+  try {
+    const remote = await (await fetch(API + '/reviews?ts=' + Date.now())).json();
+    if (Array.isArray(remote) && remote.length) reviews = remote;
+  } catch (e) {}
+  if (!reviews.length) { box.innerHTML = '<p class="note">Відгуків немає.</p>'; return; }
+  box.innerHTML = '';
+  reviews.slice().reverse().forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const id = r._id || r.id || '';
+    card.innerHTML = '<div class="row"><strong>' + esc(r.name) + '</strong><span class="stars">' + '★★★★★'.slice(0, r.stars||5) + '</span></div>' +
+      '<p class="note">' + esc(r.product||'') + '</p><p>' + esc(r.text||'') + '</p>' +
+      '<button class="danger">Видалити відгук</button>';
+    card.querySelector('button').onclick = async () => {
+      setStatus('Видаляю...');
+      if (id && String(id).indexOf('r') !== 0) {
+        try { await fetch(API + '/reviews/' + id, { method: 'DELETE' }); } catch (e) {}
+      }
+      const filtered = loadLocalReviews().filter(x => {
+        const xid = x.id || x._id || '';
+        if (id && xid === id) return false;
+        if (!id && x.name === r.name && x.text === r.text && x.date === r.date) return false;
+        return true;
+      });
+      saveLocalReviews(filtered);
+      setStatus('Відгук видалено.');
+      loadReviews();
+    };
+    box.appendChild(card);
+  });
+}
+</script>
+</body>
+</html>
