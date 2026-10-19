@@ -1,1 +1,1 @@
-.placeholder-script
+PLACEHOLDER
