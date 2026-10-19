@@ -27,11 +27,11 @@ button{border:0;border-radius:8px;padding:10px 14px;background:#9a7b2f;color:#ff
 <body>
 <div class="wrap">
   <h1>OLFÉRA — адміністратор</h1>
-  <p class="note">Пароль: 256574</p>
   <div id="login" class="card">
     <label>Пароль</label>
-    <input id="pin" type="password" inputmode="numeric">
+    <input id="pin" type="password" inputmode="numeric" autocomplete="current-password">
     <button id="enter" style="margin-top:10px">Увійти</button>
+    <p class="status" id="login-status" style="margin-top:10px"></p>
   </div>
   <div id="panel" hidden>
     <div class="tabs">
@@ -65,11 +65,16 @@ function setStatus(t){ statusEl.textContent = t || ''; }
 function esc(v){ return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
 document.getElementById('enter').onclick = () => {
+  const loginStatus = document.getElementById('login-status');
   if (document.getElementById('pin').value === PIN) {
     document.getElementById('login').hidden = true;
     document.getElementById('panel').hidden = false;
+    if (loginStatus) loginStatus.textContent = '';
     loadCatalog();
-  } else setStatus('Невірний пароль');
+  } else {
+    if (loginStatus) loginStatus.textContent = 'Невірний пароль';
+    else setStatus('Невірний пароль');
+  }
 };
 document.getElementById('pin').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('enter').click(); });
 
