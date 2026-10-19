@@ -8,12 +8,28 @@ const style = document.createElement('style');
 style.textContent = '.ml-row{display:flex;gap:6px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap}.ml-btn{border:1px solid #c9a84c;background:#fff;color:#7a6124;border-radius:999px;padding:4px 10px;font-size:.75rem;cursor:pointer}.ml-btn.active{background:#9a7b2f;color:#fff}.ml-custom{width:88px;border:1px solid #c9a84c;border-radius:999px;padding:4px 8px;text-align:center;font-size:16px}.line-total{font-size:.85rem;color:#7a6124;margin-top:4px}';
 document.head.appendChild(style);
 
+const cartBtn = document.getElementById('cart-btn');
+const cartSidebar = document.getElementById('cart-sidebar');
+const cartOverlay = document.getElementById('cart-overlay');
+const cartClose = document.getElementById('cart-close');
+function openCart() {
+  if (cartSidebar) cartSidebar.classList.add('active');
+  if (cartOverlay) cartOverlay.classList.add('active');
+}
+function closeCart() {
+  if (cartSidebar) cartSidebar.classList.remove('active');
+  if (cartOverlay) cartOverlay.classList.remove('active');
+}
+if (cartBtn) cartBtn.addEventListener('click', openCart);
+if (cartClose) cartClose.addEventListener('click', closeCart);
+if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+
 function updateCartUI() {
   const count = document.querySelector('.cart-count');
   const total = cart.reduce((s, i) => s + i.price * (i.ml || 1) * i.qty, 0);
   if (count) { count.textContent = cart.reduce((s, i) => s + i.qty, 0); count.dataset.count = String(cart.reduce((s, i) => s + i.qty, 0)); }
-  const totalEl = document.getElementById('cart-total');
-  if (totalEl) totalEl.innerHTML = 'Разом: <strong>' + total.toLocaleString('uk-UA') + ' ₴</strong>';
+  const totalEl = document.getElementById('cart-total-price');
+  if (totalEl) totalEl.textContent = total.toLocaleString('uk-UA') + ' ₴';
   const cartItemsContainer = document.getElementById('cart-items');
   if (!cartItemsContainer) return;
   if (!cart.length) {
@@ -33,6 +49,7 @@ function addToCart(product) {
   if (existing) existing.qty += 1;
   else cart.push(Object.assign({}, product, { ml: ml, qty: 1 }));
   saveCart();
+  openCart();
 }
 function removeFromCart(id, ml) {
   cart = cart.filter(item => !(item.id === id && item.ml === ml));
@@ -230,12 +247,13 @@ function renderProducts(resetPage) {
   if (resetPage) catalogPage = 1;
   const container = document.getElementById('products-container');
   const pager = document.getElementById('catalog-pager');
-  const query = (document.getElementById('search-input').value || '').trim().toLowerCase();
-  const brand = document.getElementById('brand-filter').value;
-  const price = document.getElementById('price-filter').value;
+  const query = (document.getElementById('search-input') || {}).value || '';
+  const q = query.trim().toLowerCase();
+  const brand = (document.getElementById('brand-filter') || {}).value || '';
+  const price = (document.getElementById('price-filter') || {}).value || '';
   const filtered = allProducts.filter(product => {
     const hay = (product.name + ' ' + (product.brand || '') + ' ' + (product.notes || '')).toLowerCase();
-    if (query && !hay.includes(query)) return false;
+    if (q && !hay.includes(q)) return false;
     if (brand && product.brand !== brand) return false;
     if (activeFamily && familiesOf(product).indexOf(activeFamily) === -1) return false;
     if (price) {
@@ -245,11 +263,12 @@ function renderProducts(resetPage) {
     }
     return true;
   });
+  if (!container) return;
   container.innerHTML = '';
   const count = document.getElementById('filter-count');
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   if (catalogPage > pages) catalogPage = pages;
-  count.textContent = filtered.length ? ('Знайдено: ' + filtered.length) : '';
+  if (count) count.textContent = filtered.length ? ('Знайдено: ' + filtered.length) : '';
   if (!filtered.length) {
     container.innerHTML = '<p class="catalog-empty">Нічого не знайдено. Спробуйте іншу назву або скиньте фільтр.</p>';
     if (pager) pager.innerHTML = '';
@@ -269,7 +288,6 @@ function renderProducts(resetPage) {
       else if (p === 'next') catalogPage = Math.min(pages, catalogPage + 1);
       else catalogPage = Number(p);
       renderProducts(false);
-      window.scrollTo({ top: document.getElementById('catalog').offsetTop - 80, behavior: 'smooth' });
     });
   });
 }
@@ -290,9 +308,11 @@ function setupFilters() {
     const brands = Array.from(new Set(allProducts.map(p => p.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'uk'));
     brandSelect.innerHTML = '<option value="">Усі бренди</option>' + brands.map(b => '<option value="' + b + '">' + b + '</option>').join('');
   }
-  document.getElementById('search-input').addEventListener('input', () => renderProducts(true));
-  brandSelect.addEventListener('change', () => renderProducts(true));
-  document.getElementById('price-filter').addEventListener('change', () => renderProducts(true));
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) searchInput.addEventListener('input', () => renderProducts(true));
+  if (brandSelect) brandSelect.addEventListener('change', () => renderProducts(true));
+  const priceFilter = document.getElementById('price-filter');
+  if (priceFilter) priceFilter.addEventListener('change', () => renderProducts(true));
 }
 
 async function loadProducts() {
@@ -319,6 +339,13 @@ async function loadProducts() {
   renderProducts(true);
 }
 
+const orderTg = document.getElementById('cart-order-btn');
+const orderIg = document.getElementById('cart-ig-btn');
+const orderWa = document.getElementById('cart-wa-btn');
+if (orderTg) orderTg.addEventListener('click', orderTelegram);
+if (orderIg) orderIg.addEventListener('click', orderInstagram);
+if (orderWa) orderWa.addEventListener('click', orderWhatsApp);
+
 updateCartUI();
 loadProducts();
 fillOrderFields();
@@ -342,7 +369,7 @@ const reviewProducts = document.getElementById('review-products');
 let publishedReviews = [];
 
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, ch => ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[ch]));
+  return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
 function starsText(n) {
   const v = Math.max(1, Math.min(5, Number(n) || 5));
