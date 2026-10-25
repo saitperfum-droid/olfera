@@ -98,10 +98,6 @@ function addToCart(product) {
   saveCart();
   openCart();
 }
-function removeFromCart(id, ml) {
-  cart = cart.filter(item => !(item.id === id && item.ml === ml));
-  saveCart();
-}
 
 function saveOrderFields() {
   const name = (document.getElementById('order-name') || {}).value || '';
@@ -357,31 +353,18 @@ function setupFilters() {
 }
 
 async function loadProducts() {
+  allProducts = [];
   try {
-    const localCatalog = localStorage.getItem('olfera_catalog_v1');
-    if (localCatalog) {
-      const parsed = JSON.parse(localCatalog);
-      if (parsed && parsed.products && parsed.products.length) allProducts = parsed.products;
-    }
+    allProducts = await (await fetch('products.json?v=60')).json();
   } catch (e) {}
-  if (!allProducts.length) {
+  if (!Array.isArray(allProducts) || allProducts.length < 5) {
     try {
-      const live = await (await fetch('https://crudcrud.com/api/22b8f8822db0418a98f48e6cd75a7ec8/catalogstate/6acaaa83cbfaea03e8fda0a5')).json();
-      if (live && live.products && live.products.length) allProducts = live.products;
-    } catch (e) {}
+      allProducts = await (await fetch('https://cdn.jsdelivr.net/gh/saitperfum-droid/olfera@b07b994113bb326b5c030522d9ff5edbd3fe30b7/products.json')).json();
+    } catch (e2) { allProducts = []; }
   }
-  if (!allProducts.length) {
-    try {
-      allProducts = await (await fetch('products.json?v=51')).json();
-      if (!Array.isArray(allProducts) || allProducts.length < 10) throw new Error('bad catalog');
-    } catch (e) {
-      try {
-        allProducts = await (await fetch('https://cdn.jsdelivr.net/gh/saitperfum-droid/olfera@b07b994113bb326b5c030522d9ff5edbd3fe30b7/products.json')).json();
-      } catch (e2) { allProducts = []; }
-    }
-  }
+  if (!Array.isArray(allProducts)) allProducts = [];
   try {
-    const extra = await (await fetch('products-extra.json?v=51')).json();
+    const extra = await (await fetch('products-extra.json?v=60')).json();
     if (Array.isArray(extra) && extra.length) {
       const ids = new Set(allProducts.map(p => p.id));
       extra.forEach(p => { if (p && p.id != null && !ids.has(p.id)) { allProducts.push(p); ids.add(p.id); } });
